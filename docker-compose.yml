@@ -1,0 +1,76 @@
+version: '3'
+services:
+  database:
+    image: mariadb:${DB_VERSION:-10.4}
+    volumes:
+      - "dbdata:/var/lib/mysql"
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-password}
+      MYSQL_DATABASE: ${DB_DATABASE:-wordpress}
+      MYSQL_USER: ${DB_USER:-wordpress}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
+    restart: always
+    command:
+      'mysqld --innodb-flush-method=fsync'
+
+  redis:
+    image: redis:alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    restart: always
+
+  php:
+    image: devilbox/php-fpm:${PHP_VERSION:-8.2}-work
+    depends_on:
+      - database
+      - redis
+    working_dir: /var/www/html
+    environment:
+      MYSQL_HOST: ${DB_HOST:-database}
+      MYSQL_DATABASE: ${DB_DATABASE:-wordpress}
+      MYSQL_USER: ${DB_USER:-wordpress}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
+      NEW_UID: 1000
+      NEW_GID: 1000
+    volumes:
+      - "./.docker/config/php/php.ini:/usr/local/etc/php/conf.d/zzz-php.ini"
+      - "wpdata:/var/www/html"
+      - "./:/var/www/html/wp-content/plugins/prompress"
+    extra_hosts:
+      - "${SITE_URL:-localhost}:host-gateway"
+    restart: always
+
+  web:
+    image: nginx:1-alpine
+    depends_on:
+      - php
+    volumes:
+      - "./.docker/config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "wpdata:/var/www/html"
+      - "./:/var/www/html/wp-content/plugins/prompress"
+    ports:
+      - "80:80"
+      - "443:443"
+    extra_hosts:
+      - "${SITE_URL:-localhost}:host-gateway"
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./.docker/config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - promdata:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - 9090:9090
+    restart: always
+volumes:
+  wpdata: {}
+  dbdata: {}
+  promdata: {}

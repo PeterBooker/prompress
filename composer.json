@@ -1,0 +1,45 @@
+{
+	"name": "peterbooker/prompress",
+	"description": "Monitor your WordPress install with Prometheus.",
+	"keywords": [
+		"monitoring",
+		"prometheus",
+		"alertmanager",
+		"metrics"
+	],
+	"version": "0.1.0",
+	"type": "wordpress-plugin",
+	"license": "GPL-3.0-or-later",
+	"minimum-stability": "dev",
+	"prefer-stable": true,
+	"support": {
+		"issues": "https://github.com/PeterBooker/prompress/issues",
+		"forum": "https://wordpress.org/support/plugin/prompress",
+		"wiki": "https://github.com/PeterBooker/prompress/wiki",
+		"source": "https://github.com/PeterBooker/prompress"
+	},
+	"authors": [
+		{
+			"name": "Peter Booker",
+			"email": "mail@peterbooker.com"
+		}
+	],
+	"require": {
+		"php": ">=8.1",
+		"promphp/prometheus_client_php": "^2.6"
+	},
+	"scripts": {
+		"lint": "./vendor/bin/phpcs --standard=phpcs.xml.dist --runtime-set ignore_warnings_on_exit 1",
+		"make-pot": "./vendor/bin/wp t2 make-pot ./ languages/t2.pot --domain=t2 --exclude=\".github,vendor,packages/block-library,packages/**/*.js,/node_modules,tests\"",
+		"build": "COMPOSER_MIRROR_PATH_REPOS=1 composer install --no-dev --no-progress --no-ansi --no-interaction"
+	},
+	"config": {
+		"sort-packages": true,
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		},
+		"platform": {
+			"php": "8.1"
+		}
+	}
+}

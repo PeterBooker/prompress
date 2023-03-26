@@ -1,0 +1,33 @@
+{
+	"name": "prompress",
+	"version": "0.1.0",
+	"description": "Monitor your WordPress install with Prometheus.",
+	"author": "Peter Booker <mail@peterbooker.com>",
+	"engines": {
+		"node": ">=18.0.0",
+		"npm": ">=8.1.0"
+	},
+	"scripts": {
+		"start": "wp-scripts start",
+		"build": "wp-scripts build",
+		"plugin-zip": "wp-scripts plugin-zip",
+		"lint:css": "wp-scripts lint-style ./src/assets/css/**/*.css",
+		"lint:js": "wp-scripts lint-js ./src/assets/js/**/*.js",
+		"wp-env": "wp-env",
+		"cli": "wp-env run cli wp"
+	},
+	"devDependencies": {
+		"@types/wordpress__api-fetch": "~3.23.1",
+		"@types/wordpress__block-editor": "~11.5.0",
+		"@types/wordpress__blocks": "~12.5.0",
+		"@types/wordpress__components": "~23.0.1",
+		"@types/wordpress__i18n": "~3.11.0",
+		"@types/wordpress__notices": "~3.27.0",
+		"@wordpress/env": "~5.14.0",
+		"@wordpress/eslint-plugin": "~14.2.0",
+		"@wordpress/scripts": "~26.0.0",
+		"dotenv": "~16.0.3",
+		"resolve-url-loader": "~5.0.0",
+		"webpack-remove-empty-scripts": "~1.0.1"
+	}
+}
