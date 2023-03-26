@@ -29,5 +29,16 @@
 		"dotenv": "~16.0.3",
 		"resolve-url-loader": "~5.0.0",
 		"webpack-remove-empty-scripts": "~1.0.1"
-	}
+	},
+	"files": [
+		"build",
+		"inc",
+		"languages",
+		"vendor",
+		"uninstall.php",
+		"composer.json",
+		"composer.lock",
+		"package.json",
+		"package-lock.json"
+	]
 }
