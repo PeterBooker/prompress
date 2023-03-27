@@ -34,11 +34,21 @@ class Monitor {
 
 		$this->setup_redis();
 
-		$registry = CollectorRegistry::getDefault(new Redis());
+		try {
+			$registry = CollectorRegistry::getDefault(new Redis());
+		} catch( \Exception $e ) {
+			// TODO: Perhaps display this on the settings page?
+			\error_log( 'PromPress Error: ' . $e->getMessage() );
+			return;
+		}
 
-		new RemoteRequests( $registry );
-		new Database( $registry );
-		new Posts( $registry );
+		$namespace = \apply_filters( 'prompress_metric_namespace', 'prompress' );
+
+		new Info( $registry, $namespace );
+		new RemoteRequests( $registry, $namespace );
+		new Requests( $registry, $namespace );
+		new Queries( $registry, $namespace );
+		new Posts( $registry, $namespace );
 	}
 
 	/**

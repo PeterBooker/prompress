@@ -92,9 +92,11 @@ if ( ! php_version_check() || ! wp_version_check() ) {
 require_once PROMPRESS_DIR . 'vendor/autoload.php';
 require_once PROMPRESS_DIR . 'inc/settings.php';
 require_once PROMPRESS_DIR . 'inc/metrics-page.php';
+require_once PROMPRESS_DIR . 'inc/class-info.php';
 require_once PROMPRESS_DIR . 'inc/class-remote-requests.php';
-require_once PROMPRESS_DIR . 'inc/class-database.php';
+require_once PROMPRESS_DIR . 'inc/class-queries.php';
 require_once PROMPRESS_DIR . 'inc/class-posts.php';
+require_once PROMPRESS_DIR . 'inc/class-requests.php';
 require_once PROMPRESS_DIR . 'inc/class-monitor.php';
 
 if ( \is_admin() ) {

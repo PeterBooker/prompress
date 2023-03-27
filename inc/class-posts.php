@@ -8,18 +8,19 @@ declare( strict_types = 1 );
 namespace PromPress;
 
 use Prometheus\CollectorRegistry;
-use Prometheus\Histogram;
 use Prometheus\Gauge;
 
 class Posts {
 	private CollectorRegistry $registry;
+	private string $namespace;
 	private Gauge $totals;
 
 	/**
 	 * Constructor.
 	 */
-	function __construct( CollectorRegistry $registry ) {
-		$this->registry = $registry;
+	function __construct( CollectorRegistry $registry, string $namespace ) {
+		$this->registry  = $registry;
+		$this->namespace = $namespace;
 
 		$this->setup_totals_metric();
 
@@ -32,7 +33,7 @@ class Posts {
 	 */
 	private function setup_totals_metric(): void {
 		$this->totals = $this->registry->getOrRegisterGauge(
-			'prompress',
+			$this->namespace,
 			'posts_total',
 			'Returns the total number of posts',
 			[

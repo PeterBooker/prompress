@@ -21,6 +21,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 \add_action( 'rest_api_init', __NAMESPACE__ . '\\register_rest_route' );
 
 /**
+ * Register REST route for metrics.
+ */
+function register_rest_route() : void {
+	\register_rest_route(
+		'prompress/v1',
+		'/metrics',
+		[
+			'methods'             => \WP_REST_Server::READABLE,
+			'callback'            => __NAMESPACE__ . '\\metrics_output',
+			'permission_callback' => '__return_true',
+		]
+	);
+}
+
+/**
  * Output metrics data.
  */
 function metrics_output(): \WP_REST_Response {
@@ -34,19 +49,4 @@ function metrics_output(): \WP_REST_Response {
 
 	echo $result;
 	die();
-}
-
-/**
- * Register REST route for metrics.
- */
-function register_rest_route() : void {
-	\register_rest_route(
-		'prompress/v1',
-		'/metrics',
-		[
-			'methods'             => \WP_REST_Server::READABLE,
-			'callback'            => __NAMESPACE__ . '\\metrics_output',
-			'permission_callback' => '__return_true',
-		]
-	);
 }

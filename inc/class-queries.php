@@ -1,6 +1,6 @@
 <?php
 /**
- * Database Class.
+ * Queries Class.
  */
 
 declare( strict_types = 1 );
@@ -10,16 +10,18 @@ namespace PromPress;
 use Prometheus\CollectorRegistry;
 use Prometheus\Histogram;
 
-class Database {
+class Queries {
 	private CollectorRegistry $registry;
+	private string $namespace;
 
 	private Histogram $duration;
 
 	/**
 	 * Constructor.
 	 */
-	function __construct( CollectorRegistry $registry ) {
-		$this->registry = $registry;
+	function __construct( CollectorRegistry $registry, string $namespace ) {
+		$this->registry  = $registry;
+		$this->namespace = $namespace;
 
 		$this->setup_duration_metric();
 
@@ -31,8 +33,8 @@ class Database {
 	 */
 	private function setup_duration_metric(): void {
 		$this->duration = $this->registry->getOrRegisterHistogram(
-			'prompress',
-			'queries_duration_seconds',
+			$this->namespace,
+			'query_duration_seconds',
 			'Returns how long the query took to complete in seconds',
 			[],
 		);
