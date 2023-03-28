@@ -21,6 +21,7 @@ import {
 	Spinner,
 	TextControl,
 	ToggleControl,
+	RadioControl,
 } from '@wordpress/components';
 
 import {
@@ -33,6 +34,8 @@ import { dispatch } from '@wordpress/data';
 // @ts-ignore Missing type declarations.
 import api from '@wordpress/api';
 
+import apiFetch from '@wordpress/api-fetch';
+
 import Notices from './components/Notices';
 
 import './index.scss';
@@ -44,6 +47,9 @@ function Settings() {
 			isLoaded: false,
 			isActive: true,
 			features: [],
+			isStorageCompatLoaded: false,
+			storageCompat: [],
+			storage: '',
 		}
 	);
 
@@ -51,6 +57,10 @@ function Settings() {
 		isLoaded,
 		isActive,
 		features,
+
+		isStorageCompatLoaded,
+		storageCompat,
+		storage,
 	} = state;
 
 	useEffect( () => {
@@ -62,10 +72,25 @@ function Settings() {
 					setState( {
 						isLoaded: true,
 						isActive: response[ 'prompress_option_active' ],
+						storage: response[ 'prompress_option_storage' ],
 						features: response[ 'prompress_option_features' ],
 					} );
 				} );
 			}
+		} );
+	}, [] );
+
+	useEffect( () => {
+		apiFetch( {
+			method: 'GET',
+			path:  '/prompress/v1/storage/compatibility',
+		} ).then( ( response ) => {
+			setState({
+				isStorageCompatLoaded: true,
+				storageCompat: response
+			});
+		} ).catch( ( error ) => {
+			error.log(error);
 		} );
 	}, [] );
 
@@ -103,14 +128,61 @@ function Settings() {
 								setState({ isActive: ! isActive });
 							} }
 						/>
-						{/* <TextControl
-							help={ __( 'The URL to your Meilisearch server.', 'prompress' ) }
-							label={ __( 'Meilisearch URL', 'prompress' ) }
-							onChange={ ( value ) => setState( { url: value } ) }
-							value={ url }
-						/> */}
+						<Button
+							variant="secondary"
+							onClick={ () => {
+								apiFetch( {
+									method: 'GET',
+									path:  '/prompress/v1/storage/wipe',
+								} ).then( () => {
+									dispatch( 'core/notices' ).createNotice(
+										'success',
+										__( 'Storage wiped', 'prompress' ),
+										{
+											type: 'snackbar',
+											isDismissible: true,
+										}
+									);
+								} ).catch( ( error ) => {
+									dispatch( 'core/notices' ).createNotice(
+										'success',
+										__( 'Failed to wipe storage', 'prompress' ),
+										{
+											type: 'snackbar',
+											isDismissible: true,
+										}
+									);
+								} );
+							} }
+						>{ __( 'Wipe Storage', 'prompress' ) }</Button>
 					</div>
 				</div>
+
+				<div className="components-panel">
+					<div className="components-panel__body is-opened">
+						<h2 className="components-panel__body-title">{ __( 'Storage', 'prompress' ) }</h2>
+
+						{ !isStorageCompatLoaded &&
+							<p>Checking...</p>
+						}
+
+						{ isStorageCompatLoaded &&
+							<Fragment>
+								<RadioControl
+									label="Type"
+									help="The type of data store to use."
+									selected={ storage }
+									options={ [
+										{ label: 'APC', value: 'apc' },
+										{ label: 'Redis', value: 'redis' },
+									] }
+									onChange={ ( value ) => setState({ storage: value }) }
+								/>
+							</Fragment>
+						}
+					</div>
+				</div>
+
 				<div className="components-panel">
 					<div className="components-panel__body is-opened">
 						<h2 className="components-panel__body-title">{ __( 'Features', 'prompress' ) }</h2>
@@ -121,10 +193,11 @@ function Settings() {
 			</div>
 			<div className="prompress__save">
 				<Button
-					isPrimary
+					variant="primary"
 					onClick={ () => {
 						const settings = new api.models.Settings( {
 							[ 'prompress_option_active' ]: isActive,
+							[ 'prompress_option_storage' ]: storage,
 							[ 'prompress_option_features' ]: features,
 						} );
 

@@ -18,14 +18,14 @@ declare(strict_types=1);
 
 namespace PromPress;
 
-if ( ! defined( 'ABSPATH' ) ) {
+if ( ! \defined( 'ABSPATH' ) ) {
 	die();
 }
 
 \define( 'PROMPRESS_VERSION', '0.1.0' );
 \define( 'PROMPRESS_DIR', \plugin_dir_path( __FILE__ ) );
 \define( 'PROMPRESS_URL', \plugin_dir_url( __FILE__ ) );
-\define( 'PROMPRESS_MIN_PHP_VERSION', '8.1' );
+\define( 'PROMPRESS_MIN_PHP_VERSION', '8.2' );
 \define( 'PROMPRESS_MIN_WP_VERSION', '6.1' );
 
 /**
@@ -91,13 +91,13 @@ if ( ! php_version_check() || ! wp_version_check() ) {
 
 require_once PROMPRESS_DIR . 'vendor/autoload.php';
 require_once PROMPRESS_DIR . 'inc/settings.php';
-require_once PROMPRESS_DIR . 'inc/metrics-page.php';
 require_once PROMPRESS_DIR . 'inc/class-info.php';
 require_once PROMPRESS_DIR . 'inc/class-remote-requests.php';
 require_once PROMPRESS_DIR . 'inc/class-queries.php';
 require_once PROMPRESS_DIR . 'inc/class-posts.php';
 require_once PROMPRESS_DIR . 'inc/class-requests.php';
 require_once PROMPRESS_DIR . 'inc/class-monitor.php';
+require_once PROMPRESS_DIR . 'inc/rest.php';
 
 if ( \is_admin() ) {
 	require_once PROMPRESS_DIR . 'inc/admin-page.php';

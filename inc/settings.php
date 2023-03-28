@@ -29,6 +29,16 @@ function register_settings() {
 
 	\register_setting(
 		'prompress_settings',
+		'prompress_option_storage',
+		[ // phpcs:ignore Generic.Arrays.DisallowShortArraySyntax.Found
+			'type'         => 'string',
+			'show_in_rest' => true,
+			'default'      => '',
+		]
+	);
+
+	\register_setting(
+		'prompress_settings',
 		'prompress_option_features',
 		[ // phpcs:ignore Generic.Arrays.DisallowShortArraySyntax.Found
 			'type'         => 'object',

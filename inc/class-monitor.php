@@ -9,9 +9,12 @@ namespace PromPress;
 
 use \Prometheus\CollectorRegistry;
 use \Prometheus\Storage\Redis;
+use \Prometheus\Storage\APC;
 
 class Monitor {
 	protected static self|null $instance = null;
+
+	private CollectorRegistry $registry;
 
 	public static function getInstance(): static
 	{
@@ -32,10 +35,24 @@ class Monitor {
 			return;
 		}
 
-		$this->setup_redis();
+		$storage = \get_option( 'prompress_option_storage', '' );
+		if ( empty( $storage ) ) {
+			return;
+		}
+
+		\error_log( 'Storage Error: ' . $storage );
+
+		if ( 'redis' === $storage ) {
+			$this->setup_redis();
+			$storage = new Redis();
+		} elseif ( 'apc' === $storage ) {
+			$storage = new APC();
+		} else {
+			return;
+		}
 
 		try {
-			$registry = CollectorRegistry::getDefault(new Redis());
+			$this->registry = CollectorRegistry::getDefault($storage);
 		} catch( \Exception $e ) {
 			// TODO: Perhaps display this on the settings page?
 			\error_log( 'PromPress Error: ' . $e->getMessage() );
@@ -44,17 +61,17 @@ class Monitor {
 
 		$namespace = \apply_filters( 'prompress_metric_namespace', 'prompress' );
 
-		new Info( $registry, $namespace );
-		new RemoteRequests( $registry, $namespace );
-		new Requests( $registry, $namespace );
-		new Queries( $registry, $namespace );
-		new Posts( $registry, $namespace );
+		new Info( $this->registry, $namespace );
+		new RemoteRequests( $this->registry, $namespace );
+		new Requests( $this->registry, $namespace );
+		new Queries( $this->registry, $namespace );
+		new Posts( $this->registry, $namespace );
 	}
 
 	/**
 	 * Setup Redis connection.
 	 */
-	private function setup_redis() {
+	private function setup_redis(): void {
 		if ( !\defined( 'WP_REDIS_HOST' ) ) {
 			\define( 'WP_REDIS_HOST', '127.0.0.1' );
 		}
@@ -87,6 +104,20 @@ class Monitor {
 		);
 
 		Redis::setDefaultOptions( $options );
+	}
+
+	/**
+	 * Wipe Storage.
+	 */
+	public function wipe_storage(): void {
+		$this->registry->wipeStorage();
+	}
+
+	/**
+	 * Get Registry
+	 */
+	public function get_registry(): CollectorRegistry {
+		return $this->registry;
 	}
 }
 

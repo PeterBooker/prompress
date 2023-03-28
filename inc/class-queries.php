@@ -13,7 +13,6 @@ use Prometheus\Histogram;
 class Queries {
 	private CollectorRegistry $registry;
 	private string $namespace;
-
 	private Histogram $duration;
 
 	/**
@@ -51,7 +50,7 @@ class Queries {
 		}
 
 		foreach ( $wpdb->queries as $query ) {
-			//if ( isset( $query[0], $query[1], $query[2] ) ) {
+			if ( isset( $query[0], $query[1] ) ) {
 				$stmt = \str_replace( ["\r", "\n"], '', $query[0] );
 				$stmt = \preg_replace( '/\s+/', ' ', $stmt );
 
@@ -59,7 +58,7 @@ class Queries {
 					$query[1],
 					[]
 				);
-			//}
+			}
 		}
 	}
 }
