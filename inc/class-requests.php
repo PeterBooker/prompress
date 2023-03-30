@@ -12,21 +12,29 @@ use Prometheus\Histogram;
 
 class Requests {
 	private CollectorRegistry $registry;
-    private string $namespace;
+	private string $namespace;
 	private Histogram $duration;
-	private float $start;
+	private int $status_code;
 
 	/**
 	 * Constructor.
 	 */
 	function __construct( CollectorRegistry $registry, string $namespace ) {
 		$this->registry  = $registry;
-        $this->namespace = $namespace;
+		$this->namespace = $namespace;
+		
+
+		// Check this feature is active.
+		if ( ! \apply_filters( 'prompress_feature_requests', true ) ) {
+			return;
+		}
+
+		$this->status_code = 200;
 
 		$this->setup_duration_metric();
 
-		\add_action( 'init', [ $this, 'before_request' ], 9999 );
-		\add_action( 'shutdown', [ $this, 'after_request' ], 9999, 2 );
+		\add_filter( 'status_header', [ $this, 'status_code' ], 9999, 4 );
+		\add_action( 'shutdown', [ $this, 'after_request' ], 9999 );
 	}
 
 	/**
@@ -44,31 +52,29 @@ class Requests {
 	}
 
 	/**
-	 * Before remote request execution.
-	 * Stores the current time in milliseconds, converted from nanoseconds.
+	 * Get the request status code.
 	 */
-	public function before_request(): void {
-		$this->start = ( \hrtime(true) / 1e+6 );
+	public function status_code( string $status_header, int $code ): string {
+		$this->status_code = $code;
+
+		return $status_header;
 	}
 
 	/**
 	 * After remote request execution.
 	 * Creates a metric in seconds, converted from milliseconds.
-	 * 
-	 * TODO: Look into whether we can use $info['total_time'] for duration.
 	 */
-	public function after_request( string|array $headers, array|null $info = null ): void {
-		if ( null === $info ) {
+	public function after_request(): void {
+		if ( ! \defined( 'WP_START_TIMESTAMP' ) || \defined( 'DOING_CRON' ) || \defined( 'REST_REQUEST' ) || ( \defined( 'WP_CLI' ) ) ) {
 			return;
 		}
 
-		$elapsed_secs = ( ( \hrtime(true) / 1e+6 ) - $this->start ) / 1000;
-		$this->start  = 0.00;
+		$elapsed_secs = ( \microtime( true ) - \WP_START_TIMESTAMP );
 
 		$this->duration->observe(
-			$elapsed_secs / 1000,
+			$elapsed_secs,
 			[
-				$info['http_code'],
+				$this->status_code,
 			]
 		);
 	}
