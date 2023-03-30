@@ -160,31 +160,6 @@ function Settings() {
 
 				<div className="components-panel">
 					<div className="components-panel__body is-opened">
-						<h2 className="components-panel__body-title">{ __( 'Storage', 'prompress' ) }</h2>
-
-						{ !isStorageCompatLoaded &&
-							<p>Checking...</p>
-						}
-
-						{ isStorageCompatLoaded &&
-							<Fragment>
-								<RadioControl
-									label="Type"
-									help="The type of data store to use."
-									selected={ storage }
-									options={ [
-										{ label: 'APC', value: 'apc' },
-										{ label: 'Redis', value: 'redis' },
-									] }
-									onChange={ ( value ) => setState({ storage: value }) }
-								/>
-							</Fragment>
-						}
-					</div>
-				</div>
-
-				<div className="components-panel">
-					<div className="components-panel__body is-opened">
 						<h2 className="components-panel__body-title">{ __( 'Features', 'prompress' ) }</h2>
 
 						<p>The ability to toggle specific features on/off will be coming soon.</p>

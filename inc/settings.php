@@ -58,7 +58,10 @@ function register_settings() {
 	);
 }
 
-function register_assets() {
+/**
+ * Register assets.
+ */
+function register_assets(): void {
 	$dependencies = [];
 
 	if ( \file_exists( PROMPRESS_DIR . 'build/index.asset.php' ) ) {
