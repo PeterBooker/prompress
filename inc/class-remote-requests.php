@@ -70,7 +70,7 @@ class RemoteRequests {
 		$url          = \parse_url( $info['url'] );
 
 		$this->duration->observe(
-			$elapsed_secs / 1000,
+			$elapsed_secs,
 			[
 				$url['host'],
 				$info['http_code'],
