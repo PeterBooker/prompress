@@ -9,8 +9,6 @@ namespace PromPress;
 
 use \Prometheus\CollectorRegistry;
 use \Prometheus\RenderTextFormat;
-use \Prometheus\Storage\Redis;
-use \Prometheus\Storage\APC;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die();
@@ -67,8 +65,7 @@ function metrics_permissions(): bool {
  * Output metrics data.
  */
 function metrics_output(): \WP_REST_Response {
-	$monitor = Monitor::getInstance();
-	$registry = $monitor->get_registry();
+	$registry = CollectorRegistry::getDefault();
 	$renderer = new RenderTextFormat();
 	$result = $renderer->render( $registry->getMetricFamilySamples() );
 

@@ -9,7 +9,7 @@ namespace PromPress;
 
 use \Prometheus\CollectorRegistry;
 use \Prometheus\Storage\Redis;
-use \Prometheus\Storage\APC;
+use \Prometheus\Histogram;
 
 class Monitor {
 	protected static self|null $instance = null;
@@ -25,6 +25,11 @@ class Monitor {
 		return static::$instance;
 	}
 
+	public static function setInstance($instance): void
+	{
+		static::$instance = $instance;
+	}
+
 	/**
 	 * Constructor.
 	 */
@@ -35,21 +40,9 @@ class Monitor {
 			return;
 		}
 
-		$storage = \get_option( 'prompress_option_storage', '' );
-		if ( empty( $storage ) ) {
-			return;
-		}
 
-		\error_log( 'Storage Error: ' . $storage );
-
-		if ( 'redis' === $storage ) {
-			$this->setup_redis();
-			$storage = new Redis();
-		} elseif ( 'apc' === $storage ) {
-			$storage = new APC();
-		} else {
-			return;
-		}
+		$this->setup_redis();
+		$storage = new Redis();
 
 		try {
 			$this->registry = CollectorRegistry::getDefault($storage);
