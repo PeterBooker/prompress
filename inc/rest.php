@@ -65,7 +65,15 @@ function metrics_permissions(): bool {
  * Output metrics data.
  */
 function metrics_output(): \WP_REST_Response {
-	$registry = CollectorRegistry::getDefault();
+	try {
+		$registry = CollectorRegistry::getDefault();
+	} catch( \Exception $e ) {
+		\error_log( 'PromPress Error: ' . $e->getMessage() );
+		\header( 'Content-type: ' . RenderTextFormat::MIME_TYPE );
+
+		echo \__( 'Error connecting to store, please see logs.', 'prompress' );
+		die();
+	}
 	$renderer = new RenderTextFormat();
 	$result = $renderer->render( $registry->getMetricFamilySamples() );
 
