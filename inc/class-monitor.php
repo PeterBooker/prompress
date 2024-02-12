@@ -9,7 +9,6 @@ namespace PromPress;
 
 use \Prometheus\CollectorRegistry;
 use \Prometheus\Storage\Redis;
-use \Prometheus\Histogram;
 
 class Monitor {
 	protected static self|null $instance = null;
