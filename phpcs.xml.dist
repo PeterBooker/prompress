@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<ruleset name="WordPress Coding Standards">
+	<description>Apply WordPress Coding Standards to all PromPress plugin files.</description>
+
+	<config name="installed_paths" value="vendor/wp-coding-standards/wpcs" />
+
+	<rule ref="WordPress-Core"/>
+
+	<arg name="extensions" value="php"/>
+
+	<!-- Show sniff codes in all reports -->
+	<arg value="s"/>
+
+	<file>.</file>
+
+	<rule ref="Internal.NoCodeFound">
+		<severity>0</severity>
+	</rule>
+
+	<!-- Do not perform checks inside external package directories. -->
+	<exclude-pattern>vendor/</exclude-pattern>
+	<exclude-pattern>node_modules/</exclude-pattern>
+
+	<!-- Do not perform checks on the `build` directory. -->
+	<exclude-pattern>build/</exclude-pattern>
+
+</ruleset>

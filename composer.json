@@ -1,20 +1,18 @@
 {
 	"name": "peterbooker/prompress",
 	"description": "Monitor your WordPress install with Prometheus.",
+	"type": "wordpress-plugin",
+	"license": "GPL-3.0-or-later",
+	"minimum-stability": "dev",
+	"prefer-stable": true,
 	"keywords": [
 		"monitoring",
 		"prometheus",
 		"alertmanager",
 		"metrics"
 	],
-	"type": "wordpress-plugin",
-	"license": "GPL-3.0-or-later",
-	"minimum-stability": "dev",
-	"prefer-stable": true,
 	"support": {
 		"issues": "https://github.com/PeterBooker/prompress/issues",
-		"forum": "https://wordpress.org/support/plugin/prompress",
-		"wiki": "https://github.com/PeterBooker/prompress/wiki",
 		"source": "https://github.com/PeterBooker/prompress"
 	},
 	"authors": [
@@ -25,12 +23,18 @@
 	],
 	"require": {
 		"php": ">=8.1",
-		"promphp/prometheus_client_php": "^2.6"
+		"promphp/prometheus_client_php": "~2.10.0"
+	},
+	"require-dev": {
+		"dealerdirect/phpcodesniffer-composer-installer": "~0.7.0",
+		"wp-coding-standards/wpcs": "3.0.1",
+		"phpcompatibility/phpcompatibility-wp": "~2.1.4",
+		"phpunit/phpunit": "~10.5.10",
+		"wp-cli/wp-cli-bundle": "~2.10.0"
 	},
 	"scripts": {
-		"lint": "./vendor/bin/phpcs --standard=phpcs.xml.dist --runtime-set ignore_warnings_on_exit 1",
-		"make-pot": "./vendor/bin/wp t2 make-pot ./ languages/t2.pot --domain=t2 --exclude=\".github,vendor,packages/block-library,packages/**/*.js,/node_modules,tests\"",
-		"build": "COMPOSER_MIRROR_PATH_REPOS=1 composer install --no-dev --no-progress --no-ansi --no-interaction"
+		"lint": "php ./vendor/bin/phpcs -ps --standard=WordPress .",
+		"make-pot": "./vendor/bin/wp make-pot ./ languages/prompress.pot --domain=prompress"
 	},
 	"config": {
 		"sort-packages": true,
