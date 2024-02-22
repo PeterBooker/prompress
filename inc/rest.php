@@ -69,17 +69,23 @@ function metrics_output(): \WP_REST_Response {
 		$registry = CollectorRegistry::getDefault();
 	} catch( \Exception $e ) {
 		\error_log( 'PromPress Error: ' . $e->getMessage() );
-		\header( 'Content-type: ' . RenderTextFormat::MIME_TYPE );
 
-		echo \__( 'Error connecting to store, please see logs.', 'prompress' );
-		die();
+		$response = new \WP_REST_Response( \__( 'Error connecting to store, please see logs.', 'prompress' ), 400);
+		return $response;
 	}
+
 	$renderer = new RenderTextFormat();
 	$result = $renderer->render( $registry->getMetricFamilySamples() );
 
 	\header( 'Content-type: ' . RenderTextFormat::MIME_TYPE );
 
 	echo $result;
+
+	// Wipe storage if Prometheus is scraping data.
+	if (\str_starts_with($_SERVER['HTTP_USER_AGENT'] ?? '', 'Prometheus/')) {
+		$registry->wipeStorage();
+	}
+
 	die();
 }
 
