@@ -5,26 +5,22 @@
 	"author": "Peter Booker <mail@peterbooker.com>",
 	"engines": {
 		"node": ">=18.0.0",
-		"npm": ">=8.1.0"
+		"npm": ">=10.0.0"
 	},
 	"scripts": {
 		"start": "wp-scripts start",
 		"build": "wp-scripts build",
 		"plugin-zip": "wp-scripts plugin-zip",
 		"lint:css": "wp-scripts lint-style ./src/assets/css/**/*.css",
-		"lint:js": "wp-scripts lint-js ./src/assets/js/**/*.js",
-		"wp-env": "wp-env",
-		"cli": "wp-env run cli wp"
+		"lint:js": "wp-scripts lint-js ./src/assets/js/**/*.js"
 	},
 	"devDependencies": {
 		"@types/wordpress__block-editor": "~11.5.10",
 		"@types/wordpress__blocks": "~12.5.13",
 		"@types/wordpress__components": "~23.0.11",
 		"@types/wordpress__notices": "~3.27.6",
-		"@wordpress/env": "~9.4.0",
 		"@wordpress/eslint-plugin": "~17.9.0",
 		"@wordpress/scripts": "~27.3.0",
-		"dotenv": "~16.4.5",
 		"resolve-url-loader": "~5.0.0",
 		"webpack-remove-empty-scripts": "~1.0.4"
 	},
