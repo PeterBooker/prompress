@@ -20,54 +20,34 @@ function register_settings() {
 		'prompress_settings_group',
 		'prompress_settings',
 		[ // phpcs:ignore Generic.Arrays.DisallowShortArraySyntax.Found
-			'type'         => 'array',
-			'show_in_rest' => true,
-			'sanitize_callback' => 'sanitize_callback',
-			'default'      => default_settings(),
-		]
-	);
-
-	\register_setting(
-		'prompress_settings',
-		'prompress_option_active',
-		[ // phpcs:ignore Generic.Arrays.DisallowShortArraySyntax.Found
-			'type'         => 'boolean',
-			'show_in_rest' => true,
-			'default'      => true,
-		]
-	);
-
-	\register_setting(
-		'prompress_settings',
-		'prompress_option_storage',
-		[ // phpcs:ignore Generic.Arrays.DisallowShortArraySyntax.Found
-			'type'         => 'string',
-			'show_in_rest' => true,
-			'default'      => '',
-		]
-	);
-
-	\register_setting(
-		'prompress_settings',
-		'prompress_option_features',
-		[ // phpcs:ignore Generic.Arrays.DisallowShortArraySyntax.Found
-			'type'         => 'array',
-			'default'      => [
-				'options' => true,
-				'posts' => true,
-				'queries' => true,
-				'requests' => true,
-				'remote_requests' => true,
-				'updates' => true,
-			],
+			'type'              => 'object',
 			'show_in_rest' => [
 				'schema' => [
 					'type' => 'object',
-					'features' => [
-						'type' => 'array',
+					'properties' => [
+						'active' => [
+							'type' => 'boolean',
+						],
+						'storage' => [
+							'type' => 'string',
+						],
+						'features' => [
+							'type' => 'object',
+							'properties' => [
+								'options'         => [ 'type' => 'boolean' ],
+								'posts'           => [ 'type' => 'boolean' ],
+								'queries'         => [ 'type' => 'boolean' ],
+								'requests'        => [ 'type' => 'boolean' ],
+								'remote_requests' => [ 'type' => 'boolean' ],
+								'updates'         => [ 'type' => 'boolean' ],
+							],
+						],
 					],
 				],
 			],
+			// TODO: Enable santize_callback.
+			//'sanitize_callback' => 'sanitize_callback',
+			'default'           => default_settings(),
 		]
 	);
 }
@@ -117,14 +97,15 @@ function update_setting_feature(string $feature_key, mixed $feature_value ) : bo
  */
 function default_settings() : array {
 	return [
-		'active' => true,
+		'active'   => true,
+		'storage'  => 'apc',
 		'features' => [
-			'options' => true,
-			'posts' => true,
-			'queries' => true,
-			'requests' => true,
-			'remote_requests' => false,
-			'updates' => true,
+			'options'         => true,
+			'posts'           => true,
+			'queries'         => true,
+			'requests'        => true,
+			'remote_requests' => true,
+			'updates'         => true,
 		],
 	];
 }

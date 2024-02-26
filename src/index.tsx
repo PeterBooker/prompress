@@ -45,59 +45,57 @@ function Settings() {
 		( s, a ) => ({ ...s, ...a }),
 		{
 			isLoaded: false,
-			isActive: true,
-			features: [],
-			isStorageCompatLoaded: false,
-			storageCompat: [],
-			storage: '',
+			settings: {
+				active: true,
+				storage: 'apc',
+				features: {
+					options: true,
+					posts: true,
+					queries: true,
+					requests: true,
+					remote_requests: true,
+					updates: true,
+				},
+			},
 		}
 	);
 
 	const {
 		isLoaded,
 		isActive,
-		features,
-
-		isStorageCompatLoaded,
-		storageCompat,
-		storage,
+		settings,
 	} = state;
 
-	if ( null === features ) {
-		setState({
-			features: {
-				options: true,
-				posts: true,
-				queries: true,
-				requests: true,
-				remote_requests: true,
-				updates: true,
-			}
-		});
-
-		return null;
-	}
+	const {
+		active,
+		storage,
+		features,
+	} = settings;
 
 	useEffect( () => {
 		api.loadPromise.then( () => {
 			const settings = new api.models.Settings();
 
-			if ( isLoaded === false ) {
-				settings.fetch().then( ( response ) => {
-					setState( {
-						isLoaded: true,
-						isActive: response[ 'prompress_option_active' ],
-						features:  response[ 'prompress_option_features' ],
-						// features: {
-						// 	options:  response[ 'prompress_option_feature_options' ],
-						// 	posts:  response[ 'prompress_option_feature_posts' ],
-						// 	queries:  response[ 'prompress_option_feature_queries' ],
-						// 	requests:  response[ 'prompress_option_feature_requests' ],
-						// 	remote_requests:  response[ 'prompress_option_feature_remote_requests' ],
-						// 	updates:  response[ 'prompress_option_feature_updates' ],
-						// }
+			if ( false === isLoaded ) {
+				settings.fetch()
+					.then( ( response ) => {
+						console.log(response);
+						if ( null !== response['prompress_settings'] ) {
+							setState( {
+								isLoaded: true,
+								settings: {
+									active: response['prompress_settings']['active'],
+									features: response['prompress_settings']['features'],
+								},
+							} );
+						}
+						setState( {
+							isLoaded: true,
+						} );
+					} )
+					.catch( ( error ) => {
+						error.log(error);
 					} );
-				} );
 			}
 		} );
 	}, [] );
@@ -141,13 +139,18 @@ function Settings() {
 						<ToggleControl
 							label="Active"
 							help={
-								isActive
+								active
 									? 'Monitoring is active.'
 									: 'Monitoring is not active.'
 							}
-							checked={ isActive }
+							checked={ active }
 							onChange={ () => {
-								setState({ isActive: ! isActive });
+								setState({
+									settings: {
+										...settings,
+										active: ! active,
+									}
+								});
 							} }
 						/>
 						<Button
@@ -184,11 +187,110 @@ function Settings() {
 					<div className="components-panel__body is-opened">
 						<h2 className="components-panel__body-title">{ __( 'Features', 'prompress' ) }</h2>
 
-						<p>The ability to toggle specific features on/off will be coming soon.</p>
+						<p>Toggle the following features on/off to control what is being monitored.</p>
 
-						{ features && Object.keys(features).forEach((key) => {
-							<h2>{key}{console.log(key, features[key])}</h2>
-						}) }
+						<ToggleControl
+							label={__('Options', 'prompress')}
+							help={__('Track the number of options.', 'prompress')}
+							checked={ features.options }
+							onChange={ () => {
+								setState({
+									settings: {
+										...settings,
+										features: {
+											...features,
+											options: ! features.options
+										}
+									}
+								});
+							} }
+						/>
+
+						<ToggleControl
+							label={__('Posts', 'prompress')}
+							help={__('Track the number of posts (with post type).', 'prompress')}
+							checked={ features.posts }
+							onChange={ () => {
+								setState({
+									settings: {
+										...settings,
+										features: {
+											...features,
+											posts: ! features.posts
+										}
+									}
+								});
+							} }
+						/>
+
+						<ToggleControl
+							label={__('Queries', 'prompress')}
+							help={__('Track the number and length of database queries.', 'prompress')}
+							checked={ features.queries }
+							onChange={ () => {
+								setState({
+									settings: {
+										...settings,
+										features: {
+											...features,
+											queries: ! features.queries
+										}
+									}
+								});
+							} }
+						/>
+
+						<ToggleControl
+							label={__('Requests', 'prompress')}
+							help={__('Track the number and length of requests handled by WordPress.', 'prompress')}
+							checked={ features.requests }
+							onChange={ () => {
+								setState({
+									settings: {
+										...settings,
+										features: {
+											...features,
+											requests: ! features.requests
+										}
+									}
+								});
+							} }
+						/>
+
+						<ToggleControl
+							label={__('Remote Requests', 'prompress')}
+							help={__('Track the number and length of remote requests performed by WordPress.', 'prompress')}
+							checked={ features.remote_requests }
+							onChange={ () => {
+								setState({
+									settings: {
+										...settings,
+										features: {
+											...features,
+											remote_requests: ! features.remote_requests
+										}
+									}
+								});
+							} }
+						/>
+
+						<ToggleControl
+							label={__('Updates', 'prompress')}
+							help={__('Track the number of plugin and theme updates available.', 'prompress')}
+							checked={ features.updates }
+							onChange={ () => {
+								setState({
+									settings: {
+										...settings,
+										features: {
+											...features,
+											updates: ! features.updates
+										}
+									}
+								});
+							} }
+						/>
+
 					</div>
 				</div>
 			</div>
@@ -196,12 +298,11 @@ function Settings() {
 				<Button
 					variant="primary"
 					onClick={ () => {
-						const settings = new api.models.Settings( {
-							[ 'prompress_option_active' ]: isActive,
-							[ 'prompress_option_features' ]: features,
+						const updatedSettings = new api.models.Settings( {
+							[ 'prompress_settings' ]: settings,
 						} );
 
-						settings.save();
+						updatedSettings.save();
 
 						dispatch( 'core/notices' ).createNotice(
 							'success',
