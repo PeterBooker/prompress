@@ -90,6 +90,7 @@ if ( ! php_version_check() || ! wp_version_check() ) {
 }
 
 require_once PROMPRESS_DIR . 'vendor/autoload.php';
+require_once PROMPRESS_DIR . 'inc/assets.php';
 require_once PROMPRESS_DIR . 'inc/settings.php';
 require_once PROMPRESS_DIR . 'inc/class-info.php';
 require_once PROMPRESS_DIR . 'inc/class-remote-requests.php';

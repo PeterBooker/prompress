@@ -56,7 +56,7 @@ function register_rest_routes() : void {
  * Metrics permissions callback.
  */
 function metrics_permissions(): bool {
-	// TODO: Permissions check.
+	// TODO: Add support for permissions/auth check.
 
 	return true;
 }

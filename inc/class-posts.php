@@ -54,7 +54,7 @@ class Posts {
 			$post->post_type,
 		] );
 	}
-	
+
 	/**
 	 * Delete post.
 	 */

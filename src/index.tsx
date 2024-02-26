@@ -63,6 +63,21 @@ function Settings() {
 		storage,
 	} = state;
 
+	if ( null === features ) {
+		setState({
+			features: {
+				options: true,
+				posts: true,
+				queries: true,
+				requests: true,
+				remote_requests: true,
+				updates: true,
+			}
+		});
+
+		return null;
+	}
+
 	useEffect( () => {
 		api.loadPromise.then( () => {
 			const settings = new api.models.Settings();
@@ -72,8 +87,15 @@ function Settings() {
 					setState( {
 						isLoaded: true,
 						isActive: response[ 'prompress_option_active' ],
-						storage: response[ 'prompress_option_storage' ],
-						features: response[ 'prompress_option_features' ],
+						features:  response[ 'prompress_option_features' ],
+						// features: {
+						// 	options:  response[ 'prompress_option_feature_options' ],
+						// 	posts:  response[ 'prompress_option_feature_posts' ],
+						// 	queries:  response[ 'prompress_option_feature_queries' ],
+						// 	requests:  response[ 'prompress_option_feature_requests' ],
+						// 	remote_requests:  response[ 'prompress_option_feature_remote_requests' ],
+						// 	updates:  response[ 'prompress_option_feature_updates' ],
+						// }
 					} );
 				} );
 			}
@@ -163,6 +185,10 @@ function Settings() {
 						<h2 className="components-panel__body-title">{ __( 'Features', 'prompress' ) }</h2>
 
 						<p>The ability to toggle specific features on/off will be coming soon.</p>
+
+						{ features && Object.keys(features).forEach((key) => {
+							<h2>{key}{console.log(key, features[key])}</h2>
+						}) }
 					</div>
 				</div>
 			</div>
@@ -172,7 +198,6 @@ function Settings() {
 					onClick={ () => {
 						const settings = new api.models.Settings( {
 							[ 'prompress_option_active' ]: isActive,
-							[ 'prompress_option_storage' ]: storage,
 							[ 'prompress_option_features' ]: features,
 						} );
 

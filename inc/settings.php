@@ -1,6 +1,6 @@
 <?php
 /**
- * Blocks.
+ * Settings.
  */
 
 declare( strict_types = 1 );
@@ -8,15 +8,25 @@ declare( strict_types = 1 );
 namespace PromPress;
 
 /**
- * Actions
+ * Hooks.
  */
 \add_action( 'init', __NAMESPACE__ . '\\register_settings' );
-\add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\register_assets' );
 
 /**
  * Register Settings
  */
 function register_settings() {
+	\register_setting(
+		'prompress_settings_group',
+		'prompress_settings',
+		[ // phpcs:ignore Generic.Arrays.DisallowShortArraySyntax.Found
+			'type'         => 'array',
+			'show_in_rest' => true,
+			'sanitize_callback' => 'sanitize_callback',
+			'default'      => default_settings(),
+		]
+	);
+
 	\register_setting(
 		'prompress_settings',
 		'prompress_option_active',
@@ -41,48 +51,89 @@ function register_settings() {
 		'prompress_settings',
 		'prompress_option_features',
 		[ // phpcs:ignore Generic.Arrays.DisallowShortArraySyntax.Found
-			'type'         => 'object',
+			'type'         => 'array',
 			'default'      => [
-				//'remote_request' => true,
+				'options' => true,
+				'posts' => true,
+				'queries' => true,
+				'requests' => true,
+				'remote_requests' => true,
+				'updates' => true,
 			],
 			'show_in_rest' => [
 				'schema' => [
 					'type' => 'object',
 					'features' => [
-						'type' => 'boolean',
+						'type' => 'array',
 					],
 				],
 			],
-			
 		]
 	);
 }
 
 /**
- * Register assets.
+ * Get settings.
  */
-function register_assets(): void {
-	$dependencies = [];
+function get_settings() : array {
+	$defaults = default_settings();
+	$settings = \get_option( 'prompress_settings', $defaults );
+	$settings = \wp_parse_args( $settings, $defaults );
 
-	if ( \file_exists( PROMPRESS_DIR . 'build/index.asset.php' ) ) {
-		$asset_file   = include PROMPRESS_DIR . 'build/index.asset.php';
-		$dependencies = \array_merge( $asset_file['dependencies'], $dependencies );
-	}
+	return $settings;
+}
 
-	\wp_register_script(
-		'prompress-settings',
-		PROMPRESS_URL . 'build/index.js',
-		$dependencies,
-		$asset_file['version'],
-		false
-	);
-	\wp_enqueue_script( 'prompress-settings' );
+/**
+ * Update settings.
+ */
+function update_settings(string $settings ) : bool {
+	return \update_option( 'prompress_settings', $settings );
+}
 
-	\wp_register_style(
-		'prompress-settings-style',
-		PROMPRESS_URL . 'build/index.css',
-		['wp-components'],
-		\filemtime( PROMPRESS_DIR . 'build/index.css' )
-	);
-	\wp_enqueue_style( 'prompress-settings-style' );
+/**
+ * Update setting by key.
+ */
+function update_setting(string $setting_key, mixed $setting_value ) : bool {
+	$settings = \get_option( 'prompress_settings' );
+
+	$settings[$setting_key] = $setting_value;
+
+	return \update_option( 'prompress_settings', $settings );
+}
+
+/**
+ * Update setting feature by key.
+ */
+function update_setting_feature(string $feature_key, mixed $feature_value ) : bool {
+	$settings = \get_option( 'prompress_settings' );
+
+	$settings['features'][$feature_key] = $feature_value;
+
+	return \update_option( 'prompress_settings', $settings );
+}
+
+/**
+ * Default Settings.
+ */
+function default_settings() : array {
+	return [
+		'active' => true,
+		'features' => [
+			'options' => true,
+			'posts' => true,
+			'queries' => true,
+			'requests' => true,
+			'remote_requests' => false,
+			'updates' => true,
+		],
+	];
+}
+
+/**
+ * Settings sanitize callback.
+ */
+function sanitize_callback( array $input ) : array {
+	$output = $input;
+
+	return $output;
 }
