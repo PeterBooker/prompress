@@ -22,7 +22,6 @@ class Requests {
 	function __construct( CollectorRegistry $registry, string $namespace ) {
 		$this->registry  = $registry;
 		$this->namespace = $namespace;
-		
 
 		// Check this feature is active.
 		if ( ! \apply_filters( 'prompress_feature_requests', true ) ) {

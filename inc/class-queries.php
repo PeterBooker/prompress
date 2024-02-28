@@ -13,7 +13,7 @@ use Prometheus\Histogram;
 class Queries {
 	private CollectorRegistry $registry;
 	private string $namespace;
-	private Histogram $duration;
+	private Histogram $metric;
 
 	/**
 	 * Constructor.
@@ -22,16 +22,16 @@ class Queries {
 		$this->registry  = $registry;
 		$this->namespace = $namespace;
 
-		$this->setup_duration_metric();
+		$this->setup_metric();
 
 		\add_action( 'shutdown', [ $this, 'process_queries' ], 9999 );
 	}
 
 	/**
-	 * Setup the duration metric.
+	 * Setup the metric.
 	 */
-	private function setup_duration_metric(): void {
-		$this->duration = $this->registry->getOrRegisterHistogram(
+	private function setup_metric(): void {
+		$this->metric = $this->registry->getOrRegisterHistogram(
 			$this->namespace,
 			'query_duration_seconds',
 			'Returns how long the query took to complete in seconds',
@@ -54,7 +54,7 @@ class Queries {
 				$stmt = \str_replace( ["\r", "\n"], '', $query[0] );
 				$stmt = \preg_replace( '/\s+/', ' ', $stmt );
 
-				$this->duration->observe(
+				$this->metric->observe(
 					$query[1],
 					[]
 				);

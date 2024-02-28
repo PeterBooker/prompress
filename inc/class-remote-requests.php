@@ -25,10 +25,12 @@ class RemoteRequests {
 
 		$this->setup_duration_metric();
 
-		\add_action( 'requests-curl.before_request', [ $this, 'before_request' ], 9999 );
-		\add_action( 'requests-curl.after_request', [ $this, 'after_request' ], 9999, 2 );
-		\add_action( 'requests-fsockopen.before_request', [ $this, 'before_request' ], 9999 );
-		\add_action( 'requests-fsockopen.after_request', [ $this, 'after_request' ], 9999, 2 );
+		\add_action( 'requests.before_request', [ $this, 'before_request' ], 9999 );
+		\add_action( 'requests.after_request', [ $this, 'after_request' ], 9999, 2 );
+		//\add_action( 'requests-curl.before_request', [ $this, 'before_request' ], 9999 );
+		//\add_action( 'requests-curl.after_request', [ $this, 'after_request' ], 9999, 2 );
+		//\add_action( 'requests-fsockopen.before_request', [ $this, 'before_request' ], 9999 );
+		//\add_action( 'requests-fsockopen.after_request', [ $this, 'after_request' ], 9999, 2 );
 	}
 
 	/**
@@ -57,12 +59,12 @@ class RemoteRequests {
 	/**
 	 * After remote request execution.
 	 * Stores the duration in milliseconds, converted from nanoseconds.
-	 * 
+	 *
 	 * TODO: Look into whether we can use $info['total_time'] for duration.
 	 */
 	public function after_request( string|array $headers, array|null $info = null ): void {
 		if ( null === $info ) {
-			return;
+			//return;
 		}
 
 		$elapsed_secs = ( ( \hrtime(true) / 1e+6 ) - $this->start ) / 1000;

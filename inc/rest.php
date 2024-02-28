@@ -9,6 +9,7 @@ namespace PromPress;
 
 use \Prometheus\CollectorRegistry;
 use \Prometheus\RenderTextFormat;
+use \Prometheus\Storage\Redis;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die();

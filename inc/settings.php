@@ -47,7 +47,7 @@ function register_settings() {
 			],
 			// TODO: Enable santize_callback.
 			//'sanitize_callback' => 'sanitize_callback',
-			'default'           => default_settings(),
+			'default' => default_settings(),
 		]
 	);
 }

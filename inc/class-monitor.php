@@ -10,6 +10,8 @@ namespace PromPress;
 use \Prometheus\CollectorRegistry;
 use \Prometheus\Storage\Redis;
 
+use function \PromPress\get_settings;
+
 class Monitor {
 	protected static self|null $instance = null;
 
@@ -33,18 +35,18 @@ class Monitor {
 	 * Constructor.
 	 */
 	function __construct() {
+		$settings = get_settings();
+
 		// Return early if we should not be monitoring.
-		$active = \get_option( 'prompress_option_active', false );
-		if ( ! $active ) {
+		if ( ! $settings['active'] ) {
 			return;
 		}
 
 
 		$this->setup_redis();
-		$storage = new Redis();
 
 		try {
-			$this->registry = CollectorRegistry::getDefault($storage);
+			$this->registry = CollectorRegistry::getDefault();
 		} catch( \Exception $e ) {
 			// TODO: Perhaps display this on the settings page?
 			\error_log( 'PromPress Error: ' . $e->getMessage() );
@@ -53,11 +55,20 @@ class Monitor {
 
 		$namespace = \apply_filters( 'prompress_metric_namespace', 'prompress' );
 
+		if ( $settings['features']['requests'] ) {
+			new Requests( $this->registry, $namespace );
+		}
+		if ( $settings['features']['remote_requests'] ) {
+			new RemoteRequests( $this->registry, $namespace );
+		}
+		if ( $settings['features']['queries'] ) {
+			new Queries( $this->registry, $namespace );
+		}
+		if ( $settings['features']['posts'] ) {
+			new Posts( $this->registry, $namespace );
+		}
+
 		new Info( $this->registry, $namespace );
-		new RemoteRequests( $this->registry, $namespace );
-		new Requests( $this->registry, $namespace );
-		new Queries( $this->registry, $namespace );
-		new Posts( $this->registry, $namespace );
 	}
 
 	/**
