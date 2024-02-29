@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name:     PromPress
- * Plugin URI:      https://wordpress.org/plugins/prompress
+ * Plugin URI:      https://github.com/PeterBooker/prompress
  * Description:     Monitor your WordPress website with Prometheus.
  * Version:         0.1.0
  * Author:          Peter Booker
@@ -11,7 +11,7 @@
  * License:         GPL
  * License URI:     http://www.gnu.org/licenses/gpl-3.0.txt
  * Domain Path:     /languages
- * Requires PHP:    8.0
+ * Requires PHP:    8.1
  */
 
 declare(strict_types=1);
@@ -25,7 +25,7 @@ if ( ! \defined( 'ABSPATH' ) ) {
 \define( 'PROMPRESS_VERSION', '0.1.0' );
 \define( 'PROMPRESS_DIR', \plugin_dir_path( __FILE__ ) );
 \define( 'PROMPRESS_URL', \plugin_dir_url( __FILE__ ) );
-\define( 'PROMPRESS_MIN_PHP_VERSION', '8.2' );
+\define( 'PROMPRESS_MIN_PHP_VERSION', '8.1' );
 \define( 'PROMPRESS_MIN_WP_VERSION', '6.1' );
 
 /**
