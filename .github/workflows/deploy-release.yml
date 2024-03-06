@@ -1,8 +1,9 @@
 name: Deploy new release
 
 on:
-    release:
-        types: [published]
+    push:
+        tags:
+          - '*'
 
 jobs:
     checkout-and-build:
