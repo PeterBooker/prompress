@@ -57,7 +57,7 @@ function register_rest_routes() : void {
  * Metrics permissions callback.
  */
 function metrics_permissions(): bool {
-	// TODO: Add support for permissions/auth check.
+	// TODO: Maybe add support for permissions/auth check?
 
 	return true;
 }
@@ -81,11 +81,6 @@ function metrics_output(): \WP_REST_Response {
 	\header( 'Content-type: ' . RenderTextFormat::MIME_TYPE );
 
 	echo $result;
-
-	// Wipe storage if Prometheus is scraping data.
-	if (\str_starts_with($_SERVER['HTTP_USER_AGENT'] ?? '', 'Prometheus/')) {
-		$registry->wipeStorage();
-	}
 
 	die();
 }
