@@ -5,7 +5,8 @@
 	"author": "Peter Booker <mail@peterbooker.com>",
 	"engines": {
 		"node": ">=18.0.0",
-		"npm": ">=10.0.0"
+		"npm": ">=10.0.0",
+		"yarn": "Please use npm"
 	},
 	"scripts": {
 		"start": "wp-scripts start",
@@ -31,8 +32,6 @@
 		"vendor",
 		"prompress.php",
 		"uninstall.php",
-		"composer.json",
-		"package.json",
-		"package-lock.json"
+		"LICENSE"
 	]
 }

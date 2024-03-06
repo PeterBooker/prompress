@@ -1,0 +1,45 @@
+name: Deploy new release
+
+on:
+    release:
+        types: [published]
+
+jobs:
+    checkout-and-build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Setup PHP environment
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 8.1
+                  coverage: none
+                  tools: composer
+
+            - name: Install Composer dependencies for deployment
+              run: |
+                  composer install --prefer-dist --no-suggest --no-progress --no-ansi --no-interaction --no-dev
+
+            - name: Setup Node.js environment
+              uses: actions/setup-node@v3
+              with:
+                  node-version-file: 'package.json'
+                  cache: npm
+
+            - name: Install Dependencies
+              run: npm ci
+
+            - name: Build assets
+              run: npm run build
+
+            - name: Build plugin zip
+              run: npm run plugin-zip
+
+            - name: Upload Release
+              uses: ncipollo/release-action@v1.12.0
+              with:
+                artifacts: "prompress.zip"
+                token: ${{ secrets.GITHUB_TOKEN }}
