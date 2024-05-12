@@ -34,6 +34,7 @@ function register_settings() {
 						'features' => [
 							'type' => 'object',
 							'properties' => [
+								'emails'          => [ 'type' => 'boolean' ],
 								'options'         => [ 'type' => 'boolean' ],
 								'posts'           => [ 'type' => 'boolean' ],
 								'queries'         => [ 'type' => 'boolean' ],
@@ -100,6 +101,7 @@ function default_settings() : array {
 		'active'   => true,
 		'storage'  => 'apc',
 		'features' => [
+			'emails'          => true,
 			'options'         => true,
 			'posts'           => true,
 			'queries'         => true,

@@ -49,6 +49,7 @@ function Settings() {
 				active: true,
 				storage: 'apc',
 				features: {
+					emails: true,
 					options: true,
 					posts: true,
 					queries: true,
