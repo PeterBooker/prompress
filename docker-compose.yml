@@ -1,4 +1,3 @@
-version: '3'
 services:
   database:
     image: mariadb:${DB_VERSION:-10.4}
@@ -23,7 +22,7 @@ services:
     restart: always
 
   php:
-    image: devilbox/php-fpm:${PHP_VERSION:-8.2}-work
+    image: devilbox/php-fpm:${PHP_VERSION:-8.3}-work
     depends_on:
       - database
       - redis
