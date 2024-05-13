@@ -23,7 +23,7 @@ class RemoteRequests {
 		$this->registry  = $registry;
 		$this->namespace = $namespace;
 
-		$this->setup_duration_metric();
+		$this->setup_metrics();
 
 		\add_action( 'requests.before_request', [ $this, 'before_request' ], 9999 );
 		\add_action( 'requests.after_request', [ $this, 'after_request' ], 9999, 2 );
@@ -34,9 +34,9 @@ class RemoteRequests {
 	}
 
 	/**
-	 * Setup the duration metric.
+	 * Setup the metrics.
 	 */
-	private function setup_duration_metric(): void {
+	private function setup_metrics(): void {
 		$this->duration = $this->registry->getOrRegisterHistogram(
 			$this->namespace,
 			'remote_request_duration_seconds',

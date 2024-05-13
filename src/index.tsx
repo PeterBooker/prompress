@@ -50,6 +50,7 @@ function Settings() {
 				storage: 'apc',
 				features: {
 					emails: true,
+					errors: true,
 					options: true,
 					posts: true,
 					queries: true,
@@ -191,6 +192,40 @@ function Settings() {
 						<p>Toggle the following features on/off to control what is being monitored.</p>
 
 						<ToggleControl
+							label={__('Emails', 'prompress')}
+							help={__('Track the number of emails sent.', 'prompress')}
+							checked={ features.emails }
+							onChange={ () => {
+								setState({
+									settings: {
+										...settings,
+										features: {
+											...features,
+											emails: ! features.emails
+										}
+									}
+								});
+							} }
+						/>
+
+						<ToggleControl
+							label={__('Errors', 'prompress')}
+							help={__('Track the number of errors thrown.', 'prompress')}
+							checked={ features.errors }
+							onChange={ () => {
+								setState({
+									settings: {
+										...settings,
+										features: {
+											...features,
+											errors: ! features.errors
+										}
+									}
+								});
+							} }
+						/>
+
+						<ToggleControl
 							label={__('Options', 'prompress')}
 							help={__('Track the number of options.', 'prompress')}
 							checked={ features.options }
@@ -226,7 +261,7 @@ function Settings() {
 
 						<ToggleControl
 							label={__('Queries', 'prompress')}
-							help={__('Track the number and length of database queries.', 'prompress')}
+							help={__('Track the number and length of database queries. Note: The `SAVEQUERIES` constant must be set and true.', 'prompress')}
 							checked={ features.queries }
 							onChange={ () => {
 								setState({
@@ -243,7 +278,7 @@ function Settings() {
 
 						<ToggleControl
 							label={__('Requests', 'prompress')}
-							help={__('Track the number and length of requests handled by WordPress.', 'prompress')}
+							help={__('Track the number and length of requests.', 'prompress')}
 							checked={ features.requests }
 							onChange={ () => {
 								setState({
@@ -260,7 +295,7 @@ function Settings() {
 
 						<ToggleControl
 							label={__('Remote Requests', 'prompress')}
-							help={__('Track the number and length of remote requests performed by WordPress.', 'prompress')}
+							help={__('Track the number and length of remote requests.', 'prompress')}
 							checked={ features.remote_requests }
 							onChange={ () => {
 								setState({

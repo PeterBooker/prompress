@@ -35,6 +35,7 @@ function register_settings() {
 							'type' => 'object',
 							'properties' => [
 								'emails'          => [ 'type' => 'boolean' ],
+								'errors'          => [ 'type' => 'boolean' ],
 								'options'         => [ 'type' => 'boolean' ],
 								'posts'           => [ 'type' => 'boolean' ],
 								'queries'         => [ 'type' => 'boolean' ],
@@ -56,7 +57,7 @@ function register_settings() {
 /**
  * Get settings.
  */
-function get_settings() : array {
+function get_settings(): array {
 	$defaults = default_settings();
 	$settings = \get_option( 'prompress_settings', $defaults );
 	$settings = \wp_parse_args( $settings, $defaults );
@@ -67,14 +68,14 @@ function get_settings() : array {
 /**
  * Update settings.
  */
-function update_settings(string $settings ) : bool {
+function update_settings( string $settings ): bool {
 	return \update_option( 'prompress_settings', $settings );
 }
 
 /**
  * Update setting by key.
  */
-function update_setting(string $setting_key, mixed $setting_value ) : bool {
+function update_setting( string $setting_key, mixed $setting_value ): bool {
 	$settings = \get_option( 'prompress_settings' );
 
 	$settings[$setting_key] = $setting_value;
@@ -85,10 +86,10 @@ function update_setting(string $setting_key, mixed $setting_value ) : bool {
 /**
  * Update setting feature by key.
  */
-function update_setting_feature(string $feature_key, mixed $feature_value ) : bool {
+function update_setting_feature( string $feature_key, mixed $feature_value ): bool {
 	$settings = \get_option( 'prompress_settings' );
 
-	$settings['features'][$feature_key] = $feature_value;
+	$settings['features'][ $feature_key ] = $feature_value;
 
 	return \update_option( 'prompress_settings', $settings );
 }
@@ -102,6 +103,7 @@ function default_settings() : array {
 		'storage'  => 'apc',
 		'features' => [
 			'emails'          => true,
+			'errors'          => true,
 			'options'         => true,
 			'posts'           => true,
 			'queries'         => true,

@@ -22,20 +22,34 @@ class Queries {
 		$this->registry  = $registry;
 		$this->namespace = $namespace;
 
-		$this->setup_metric();
+		$this->setup_metrics();
 
 		\add_action( 'shutdown', [ $this, 'process_queries' ], 9999 );
 	}
 
 	/**
-	 * Setup the metric.
+	 * Setup the metrics.
 	 */
-	private function setup_metric(): void {
+	private function setup_metrics(): void {
 		$this->metric = $this->registry->getOrRegisterHistogram(
 			$this->namespace,
 			'query_duration_seconds',
 			'Returns how long the query took to complete in seconds',
 			[],
+			[
+				0.001,
+				0.002,
+				0.003,
+				0.004,
+				0.005,
+				0.0075,
+				0.01,
+				0.025,
+				0.05,
+				0.1,
+				0.5,
+				1,
+			]
 		);
 	}
 

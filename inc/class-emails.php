@@ -1,6 +1,6 @@
 <?php
 /**
- * Email Class.
+ * Emails Class.
  */
 
 declare( strict_types = 1 );
@@ -10,7 +10,7 @@ namespace PromPress;
 use Prometheus\CollectorRegistry;
 use Prometheus\Counter;
 
-class Requests {
+class Emails {
 	private CollectorRegistry $registry;
 	private string $namespace;
 	private Counter $count;
@@ -50,14 +50,14 @@ class Requests {
 	/**
 	 * Handle successful emails.
 	 */
-	private function handle_successful(): void {
+	public function handle_successful(): void {
 		$this->count->inc( [ 'status' => 'success' ] );
 	}
 
 	/**
 	 * Handle failed emails.
 	 */
-	private function handle_failed(): void {
+	public function handle_failed(): void {
 		$this->count->inc( [ 'status' => 'fail' ] );
 	}
 }

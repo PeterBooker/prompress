@@ -55,11 +55,20 @@ class Monitor {
 
 		$namespace = \apply_filters( 'prompress_metric_namespace', 'prompress' );
 
+		if ( $settings['features']['emails'] ) {
+			new Emails( $this->registry, $namespace );
+		}
+		if ( $settings['features']['errors'] ) {
+			new Errors( $this->registry, $namespace );
+		}
 		if ( $settings['features']['requests'] ) {
 			new Requests( $this->registry, $namespace );
 		}
 		if ( $settings['features']['remote_requests'] ) {
 			new RemoteRequests( $this->registry, $namespace );
+		}
+		if ( $settings['features']['options'] ) {
+			new Options( $this->registry, $namespace );
 		}
 		if ( $settings['features']['queries'] ) {
 			new Queries( $this->registry, $namespace );

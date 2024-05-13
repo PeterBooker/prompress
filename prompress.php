@@ -34,7 +34,7 @@ if ( ! \defined( 'ABSPATH' ) ) {
  * @return bool
  */
 function php_version_check() {
-	if ( \version_compare( PHP_VERSION, PROMPRESS_MIN_PHP_VERSION, '<' ) ) {
+	if ( \version_compare( \PHP_VERSION, PROMPRESS_MIN_PHP_VERSION, '<' ) ) {
 		return false;
 	}
 	return true;
@@ -61,9 +61,9 @@ function requirements_error_notice() {
 	if ( ! php_version_check() ) {
 		$notices[] = \sprintf(
 			/* translators: placeholder 1 is minimum required PHP version, placeholder 2 is installed PHP version. */
-			\esc_html__( 'PromPress plugin requires PHP %1$s or higher. You’re still on %2$s.', 'prompress' ),
+			\esc_html__( 'PromPress plugin requires PHP %1$s or higher. You are on %2$s.', 'prompress' ),
 			\esc_html( PROMPRESS_MIN_PHP_VERSION ),
-			\esc_html( PHP_VERSION )
+			\esc_html( \PHP_VERSION )
 		);
 	}
 
@@ -93,6 +93,7 @@ require_once PROMPRESS_DIR . 'vendor/autoload.php';
 require_once PROMPRESS_DIR . 'inc/assets.php';
 require_once PROMPRESS_DIR . 'inc/settings.php';
 require_once PROMPRESS_DIR . 'inc/class-emails.php';
+require_once PROMPRESS_DIR . 'inc/class-errors.php';
 require_once PROMPRESS_DIR . 'inc/class-info.php';
 require_once PROMPRESS_DIR . 'inc/class-remote-requests.php';
 require_once PROMPRESS_DIR . 'inc/class-queries.php';

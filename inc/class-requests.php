@@ -30,16 +30,16 @@ class Requests {
 
 		$this->status_code = 200;
 
-		$this->setup_duration_metric();
+		$this->setup_metrics();
 
 		\add_filter( 'status_header', [ $this, 'status_code' ], 9999, 4 );
 		\add_action( 'shutdown', [ $this, 'after_request' ], 9999 );
 	}
 
 	/**
-	 * Setup the duration metric.
+	 * Setup the metrics.
 	 */
-	private function setup_duration_metric(): void {
+	private function setup_metrics(): void {
 		$this->duration = $this->registry->getOrRegisterHistogram(
 			$this->namespace,
 			'request_duration_seconds',

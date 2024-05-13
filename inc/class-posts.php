@@ -13,7 +13,7 @@ use Prometheus\Gauge;
 class Posts {
 	private CollectorRegistry $registry;
 	private string $namespace;
-	private Gauge $totals;
+	private Gauge $total;
 
 	/**
 	 * Constructor.
@@ -22,17 +22,27 @@ class Posts {
 		$this->registry  = $registry;
 		$this->namespace = $namespace;
 
-		$this->setup_totals_metric();
+		$this->setup_metrics();
 
-		\add_action( 'wp_insert_post', [ $this, 'insert_post' ], 9999, 3 );
-		\add_action( 'delete_post', [ $this, 'insert_post' ], 9999 );
+		\add_action( 'prompress_count_posts', [ $this, 'count_posts' ] );
+
+		if ( ! \wp_next_scheduled( 'prompress_count_posts' ) ) {
+			$current_time  = \current_time( 'timestamp' );
+			$schedule_time = \strtotime( 'today 01:00:00' );
+	
+			if ( $current_time > $schedule_time ) {
+				$schedule_time = \strtotime( 'tomorrow 01:00:00' );
+			}
+	
+			\wp_schedule_event( $schedule_time, 'daily', 'prompress_count_posts' );
+		}
 	}
 
 	/**
-	 * Setup the duration metric.
+	 * Setup the metrics.
 	 */
-	private function setup_totals_metric(): void {
-		$this->totals = $this->registry->getOrRegisterGauge(
+	private function setup_metrics(): void {
+		$this->total = $this->registry->getOrRegisterGauge(
 			$this->namespace,
 			'posts_total',
 			'Returns the total number of posts',
@@ -43,24 +53,22 @@ class Posts {
 	}
 
 	/**
-	 * Insert post.
+	 * Handle counting posts.
 	 */
-	public function insert_post( int $post_ID, \WP_Post $post, bool $update ): void {
-		if ( $update ) {
-			return;
+	public function count_posts(): void {
+		global $wpdb;
+		$sql = "SELECT post_status, COUNT(*) as num_posts FROM {$wpdb->posts} WHERE post_type = 'post' GROUP BY post_status";
+		$results = $wpdb->get_results($sql);
+
+		if (!empty($results)) {
+			foreach ($results as $result) {
+				$this->total->set(
+					(int) $result->num_posts,
+					[
+						'post_status' => $result->post_status,
+					]
+				);
+			}
 		}
-
-		$this->totals->inc( [
-			$post->post_type,
-		] );
-	}
-
-	/**
-	 * Delete post.
-	 */
-	public function delete_post( int $post_ID, \WP_Post $post ): void {
-		$this->totals->dec( [
-			$post->post_type,
-		] );
 	}
 }

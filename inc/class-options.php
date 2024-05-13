@@ -10,10 +10,10 @@ namespace PromPress;
 use Prometheus\CollectorRegistry;
 use Prometheus\Gauge;
 
-class Requests {
+class Options {
 	private CollectorRegistry $registry;
 	private string $namespace;
-	private Gauge $gauge;
+	private Gauge $total;
 
 	/**
 	 * Constructor.
@@ -27,16 +27,16 @@ class Requests {
 			return;
 		}
 
-		$this->setup_gauge_metric();
+		$this->setup_metrics();
 
-		\add_action( 'prompress_count_options', __NAMESPACE__ . '\\count_options' );
+		\add_action( 'prompress_count_options', [ $this, 'count_options' ] );
 
 		if ( ! \wp_next_scheduled( 'prompress_count_options' ) ) {
-			$current_time  = current_time( 'timestamp' );
-			$schedule_time = strtotime( 'today 02:00:00' );
+			$current_time  = \current_time( 'timestamp' );
+			$schedule_time = \strtotime( 'today 02:00:00' );
 	
 			if ( $current_time > $schedule_time ) {
-				$schedule_time = strtotime( 'tomorrow 02:00:00' );
+				$schedule_time = \strtotime( 'tomorrow 02:00:00' );
 			}
 	
 			\wp_schedule_event( $schedule_time, 'daily', 'prompress_count_options' );
@@ -44,10 +44,10 @@ class Requests {
 	}
 
 	/**
-	 * Setup the gauge metric.
+	 * Setup the metrics.
 	 */
-	private function setup_gauge_metric(): void {
-		$this->gauge = $this->registry->getOrRegisterGauge(
+	private function setup_metrics(): void {
+		$this->total = $this->registry->getOrRegisterGauge(
 			$this->namespace,
 			'options_total',
 			'Returns how many options exist in the database',
@@ -58,10 +58,10 @@ class Requests {
 	/**
 	 * Handle counting options.
 	 */
-	private function count_options(): void {
-		global $wpdb; // This allows you to use the $wpdb object provided by WordPress
+	public function count_options(): void {
+		global $wpdb;
 		$sql = "SELECT COUNT(*) FROM {$wpdb->options}";
 		$count = (int) $wpdb->get_var($sql);
-		$this->gauge->set($count);
+		$this->total->set($count);
 	}
 }
