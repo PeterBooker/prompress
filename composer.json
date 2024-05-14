@@ -3,7 +3,7 @@
 	"description": "Monitor your WordPress install with Prometheus.",
 	"type": "wordpress-plugin",
 	"license": "GPL-3.0-or-later",
-	"version": "0.1.0",
+	"version": "0.2.1",
 	"minimum-stability": "dev",
 	"prefer-stable": true,
 	"keywords": [
