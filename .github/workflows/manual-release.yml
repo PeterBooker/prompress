@@ -58,7 +58,6 @@ jobs:
                 git add -f build/*
                 git rm -r .github/
                 git rm -r local/
-                git rm -r node_modules/
                 git rm -r src/
                 git rm -r .gitignore
                 git rm package.json
