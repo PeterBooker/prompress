@@ -4,7 +4,7 @@
 	"description": "Monitor your WordPress install with Prometheus.",
 	"author": "Peter Booker <mail@peterbooker.com>",
 	"engines": {
-		"node": ">=18.0.0",
+		"node": ">=20.0.0",
 		"npm": ">=10.0.0",
 		"yarn": "Please use npm"
 	},
