@@ -60,6 +60,9 @@ jobs:
                 git rm -r local/
                 git rm -r src/
                 git rm -r .gitignore
+                git rm .nvmrc
+                git rm .wp-env.json
+                git rm docker-compose.yml
                 git rm package.json
                 git rm package-lock.json
                 git rm phpcs.xml.dist
