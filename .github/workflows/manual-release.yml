@@ -33,7 +33,7 @@ jobs:
                 npm install --package-lock-only
                 git config --global user.name "GitHub Actions"
                 git config --global user.email "github-actions@github.com"
-                git add composer.json composer.lock package.json package-lock.json dekode-gtm-plugin.php
+                git add composer.json composer.lock package.json package-lock.json prompress.php
                 git commit -m "Bump version to $new_version"
                 git push origin HEAD:main
 
