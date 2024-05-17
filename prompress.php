@@ -1,25 +1,28 @@
 <?php
 
 /**
- * Plugin Name:     PromPress
- * Plugin URI:      https://github.com/PeterBooker/prompress
- * Description:     Monitor your WordPress website with Prometheus.
- * Version:         0.2.5
- * Author:          Peter Booker
- * Author URI:      https://peterbooker.com
- * Text Domain:     prompress
- * License:         GPL
- * License URI:     http://www.gnu.org/licenses/gpl-3.0.txt
- * Domain Path:     /languages
- * Requires PHP:    8.1
+ * Plugin Name:       PromPress
+ * Plugin URI:        https://github.com/PeterBooker/prompress
+ * Description:       Monitor your WordPress website with Prometheus.
+ * Version:           0.2.5
+ * Author:            Peter Booker
+ * Author URI:        https://peterbooker.com
+ * Text Domain:       prompress
+ * License:           GPL v3
+ * License URI:       http://www.gnu.org/licenses/gpl-3.0.txt
+ * Domain Path:       /languages
+ * Requires at least: 6.4
+ * Requires PHP:      8.1
  */
 
 declare(strict_types=1);
 
 namespace PromPress;
 
-if ( ! \defined( 'ABSPATH' ) ) {
-	die();
+if ( ! \function_exists( 'add_filter' ) ) {
+	\header( 'Status: 403 Forbidden' );
+	\header( 'HTTP/1.1 403 Forbidden' );
+	exit();
 }
 
 \define( 'PROMPRESS_VERSION', '0.2.5' );
