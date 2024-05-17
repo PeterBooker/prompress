@@ -42,7 +42,6 @@ class Monitor {
 			return;
 		}
 
-
 		$this->setup_redis();
 
 		try {
