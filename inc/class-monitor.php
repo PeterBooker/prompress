@@ -76,7 +76,7 @@ class Monitor {
 			new Posts( $this->registry, $namespace );
 		}
 
-		new Info( $this->registry, $namespace );
+		new Misc( $this->registry, $namespace );
 	}
 
 	/**

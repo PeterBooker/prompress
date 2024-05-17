@@ -13,7 +13,8 @@ use Prometheus\Counter;
 class Errors {
 	private CollectorRegistry $registry;
 	private string $namespace;
-	private Counter $count;
+	private Counter $errors;
+	private Counter $exceptions;
 
 	/**
 	 * Constructor.
@@ -31,19 +32,27 @@ class Errors {
 		$this->setup_metrics();
 
 		\set_error_handler( [ $this, 'custom_error_handler' ] );
+		\set_exception_handler( [ $this, 'custom_exception_handler' ] );
 	}
 
 	/**
 	 * Setup the metrics.
 	 */
 	private function setup_metrics(): void {
-		$this->count = $this->registry->getOrRegisterCounter(
+		$this->errors = $this->registry->getOrRegisterCounter(
 			$this->namespace,
 			'error_count_total',
 			'Returns how many errors have occurred',
 			[
 				'level'
 			],
+		);
+
+		$this->exceptions = $this->registry->getOrRegisterCounter(
+			$this->namespace,
+			'exception_count_total',
+			'Returns how many uncaught exceptions have occurred',
+			[],
 		);
 	}
 
@@ -76,7 +85,16 @@ class Errors {
 				break;
 		}
 
-		$this->count->inc( [ 'level' => $error_type ] );
+		$this->errors->inc( [ 'level' => $error_type ] );
+
+		return false;
+	}
+
+	/**
+	 * Handle uncaught exceptions.
+	 */
+	public function custom_exception_handler(): bool {
+		$this->exceptions->inc();
 
 		return false;
 	}

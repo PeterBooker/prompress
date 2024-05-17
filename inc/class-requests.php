@@ -8,12 +8,15 @@ declare( strict_types = 1 );
 namespace PromPress;
 
 use Prometheus\CollectorRegistry;
+use Prometheus\Counter;
 use Prometheus\Histogram;
 
 class Requests {
 	private CollectorRegistry $registry;
 	private string $namespace;
+	private Counter $total;
 	private Histogram $duration;
+	private Histogram $memory;
 	private int $status_code;
 
 	/**
@@ -24,7 +27,7 @@ class Requests {
 		$this->namespace = $namespace;
 
 		// Check this feature is active.
-		if ( ! \apply_filters( 'prompress_feature_requests', true ) ) {
+		if ( ! \apply_filters( 'prompress_feature_requests', true ) && !\is_admin() ) {
 			return;
 		}
 
@@ -33,13 +36,22 @@ class Requests {
 		$this->setup_metrics();
 
 		\add_filter( 'status_header', [ $this, 'status_code' ], 9999, 4 );
-		\add_action( 'shutdown', [ $this, 'after_request' ], 9999 );
+		\register_shutdown_function( [ $this, 'after_request' ] );
 	}
 
 	/**
 	 * Setup the metrics.
 	 */
 	private function setup_metrics(): void {
+		$this->total = $this->registry->getOrRegisterCounter(
+			$this->namespace,
+			'request_count_total',
+			'Returns how total number of requests',
+			[
+				'status'
+			],
+		);
+
 		$this->duration = $this->registry->getOrRegisterHistogram(
 			$this->namespace,
 			'request_duration_seconds',
@@ -47,6 +59,46 @@ class Requests {
 			[
 				'status_code',
 			],
+			\apply_filters( 'prompress_metric_request_duration_buckets', [
+				0.1,
+				0.2,
+				0.3,
+				0.4,
+				0.5,
+				0.6,
+				0.7,
+				0.8,
+				0.9,
+				1.0,
+				1.5,
+				2.0,
+				2.5,
+				5.0,
+				10.0,
+			] ),
+		);
+
+		$this->memory = $this->registry->getOrRegisterHistogram(
+			$this->namespace,
+			'request_peak_memory',
+			'Returns how much memory the request used.',
+			[],
+			\apply_filters( 'prompress_metric_request_peak_memory_buckets', [
+				2.0,
+				2.5,
+				3.0,
+				3.5,
+				4.0,
+				4.5,
+				5.0,
+				7.5,
+				10.0,
+				15.0,
+				25.0,
+				50.0,
+				100.0,
+				200.0,
+			] ),
 		);
 	}
 
@@ -70,11 +122,21 @@ class Requests {
 
 		$elapsed_secs = ( \microtime( true ) - \WP_START_TIMESTAMP );
 
+		$this->total->inc(
+			[
+				$this->status_code,
+			]
+		);
+
 		$this->duration->observe(
 			$elapsed_secs,
 			[
 				$this->status_code,
 			]
+		);
+
+		$this->memory->observe(
+			(\memory_get_peak_usage(false) / 1024 / 1024)
 		);
 	}
 }

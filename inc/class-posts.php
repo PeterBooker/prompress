@@ -29,11 +29,11 @@ class Posts {
 		if ( ! \wp_next_scheduled( 'prompress_count_posts' ) ) {
 			$current_time  = \current_time( 'timestamp' );
 			$schedule_time = \strtotime( 'today 01:00:00' );
-	
+
 			if ( $current_time > $schedule_time ) {
 				$schedule_time = \strtotime( 'tomorrow 01:00:00' );
 			}
-	
+
 			\wp_schedule_event( $schedule_time, 'daily', 'prompress_count_posts' );
 		}
 	}

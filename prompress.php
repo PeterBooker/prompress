@@ -97,7 +97,7 @@ require_once PROMPRESS_DIR . 'inc/assets.php';
 require_once PROMPRESS_DIR . 'inc/settings.php';
 require_once PROMPRESS_DIR . 'inc/class-emails.php';
 require_once PROMPRESS_DIR . 'inc/class-errors.php';
-require_once PROMPRESS_DIR . 'inc/class-info.php';
+require_once PROMPRESS_DIR . 'inc/class-misc.php';
 require_once PROMPRESS_DIR . 'inc/class-remote-requests.php';
 require_once PROMPRESS_DIR . 'inc/class-queries.php';
 require_once PROMPRESS_DIR . 'inc/class-options.php';

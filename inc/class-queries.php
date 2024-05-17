@@ -36,7 +36,7 @@ class Queries {
 			'query_duration_seconds',
 			'Returns how long the query took to complete in seconds',
 			[],
-			[
+			\apply_filters( 'prompress_metric_query_duration_buckets', [
 				0.001,
 				0.002,
 				0.003,
@@ -49,7 +49,7 @@ class Queries {
 				0.1,
 				0.5,
 				1,
-			]
+			] ),
 		);
 	}
 

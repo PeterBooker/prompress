@@ -10,10 +10,10 @@ namespace PromPress;
 use Prometheus\CollectorRegistry;
 use Prometheus\Gauge;
 
-class Info {
+class Misc {
 	private CollectorRegistry $registry;
 	private string $namespace;
-	private Gauge $totals;
+	private Gauge $info;
 	private Gauge $plugin_updates;
 	private Gauge $theme_updates;
 
@@ -26,20 +26,23 @@ class Info {
 
 		$this->setup_metrics();
 
-		\add_action( 'init', [ $this, 'collect_info' ], 9999 );
+		\add_action( 'init', [ $this, 'collect_misc' ], 9999 );
 	}
 
 	/**
 	 * Setup the metrics.
 	 */
 	private function setup_metrics(): void {
-		$this->totals = $this->registry->getOrRegisterGauge(
+		$this->info = $this->registry->getOrRegisterGauge(
 			$this->namespace,
-			'wp_info',
+			'info',
 			'Information about the WordPress environment.',
 			[
-				'version',
+				'wp_version',
+				'php_version',
 				'db_version',
+				'machine',
+				'os',
 			],
 		);
 
@@ -59,14 +62,17 @@ class Info {
 	}
 
 	/**
-	 * Collect info.
+	 * Collect general data.
 	 */
-	public function collect_info(): void {
+	public function collect_misc(): void {
 		global $wp_version, $wp_db_version;
 
-		$this->totals->set( 1, [
+		$this->info->set( 1, [
 			$wp_version,
+			\phpversion() ?? 'unknown',
 			$wp_db_version,
+			\php_uname( 'm' ),
+			\php_uname( 's' ),
 		] );
 
 		require_once ABSPATH . 'wp-admin/includes/update.php';
