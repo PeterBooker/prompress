@@ -1,6 +1,6 @@
 {
 	"name": "prompress",
-	"version": "0.2.5",
+	"version": "1.0.0",
 	"description": "Monitor your WordPress install with Prometheus.",
 	"author": "Peter Booker <mail@peterbooker.com>",
 	"engines": {

@@ -4,7 +4,7 @@
  * Plugin Name:       PromPress
  * Plugin URI:        https://github.com/PeterBooker/prompress
  * Description:       Monitor your WordPress website with Prometheus.
- * Version:           0.2.5
+ * Version:           0.3.0
  * Author:            Peter Booker
  * Author URI:        https://peterbooker.com
  * Text Domain:       prompress
@@ -25,7 +25,7 @@ if ( ! \function_exists( 'add_filter' ) ) {
 	exit();
 }
 
-\define( 'PROMPRESS_VERSION', '0.2.5' );
+\define( 'PROMPRESS_VERSION', '0.3.0' );
 \define( 'PROMPRESS_DIR', \plugin_dir_path( __FILE__ ) );
 \define( 'PROMPRESS_URL', \plugin_dir_url( __FILE__ ) );
 \define( 'PROMPRESS_MIN_PHP_VERSION', '8.1' );
