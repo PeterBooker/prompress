@@ -1,6 +1,8 @@
 <?php
 /**
  * Requests Class.
+ *
+ * @package PromPress
  */
 
 declare( strict_types = 1 );
@@ -11,23 +13,63 @@ use Prometheus\CollectorRegistry;
 use Prometheus\Counter;
 use Prometheus\Histogram;
 
+/**
+ * Requests Class.
+ *
+ * Handles all metrics relating to requests.
+ */
 class Requests {
+	/**
+	 * CollectorRegistry instance.
+	 *
+	 * @var CollectorRegistry
+	 */
 	private CollectorRegistry $registry;
-	private string $namespace;
+
+	/**
+	 * Prefix.
+	 *
+	 * @var string
+	 */
+	private string $prefix;
+
+	/**
+	 * Total requests.
+	 *
+	 * @var Counter
+	 */
 	private Counter $total;
+
+	/**
+	 * Request duration.
+	 *
+	 * @var Histogram
+	 */
 	private Histogram $duration;
+
+	/**
+	 * Request memory.
+	 *
+	 * @var Histogram
+	 */
 	private Histogram $memory;
+
+	/**
+	 * Status code.
+	 *
+	 * @var int
+	 */
 	private int $status_code;
 
 	/**
 	 * Constructor.
 	 */
-	function __construct( CollectorRegistry $registry, string $namespace ) {
-		$this->registry  = $registry;
-		$this->namespace = $namespace;
+	public function __construct( CollectorRegistry $registry, string $prefix ) {
+		$this->registry = $registry;
+		$this->prefix   = $prefix;
 
 		// Check this feature is active.
-		if ( ! \apply_filters( 'prompress_feature_requests', true ) && !\is_admin() ) {
+		if ( ! \apply_filters( 'prompress_feature_requests', true ) && ! \is_admin() ) {
 			return;
 		}
 
@@ -44,16 +86,16 @@ class Requests {
 	 */
 	private function setup_metrics(): void {
 		$this->total = $this->registry->getOrRegisterCounter(
-			$this->namespace,
+			$this->prefix,
 			'request_count_total',
 			'Returns how total number of requests',
 			[
-				'status'
+				'status',
 			],
 		);
 
 		$this->duration = $this->registry->getOrRegisterHistogram(
-			$this->namespace,
+			$this->prefix,
 			'request_duration_seconds',
 			'Returns how long the request took to complete in seconds',
 			[
@@ -79,7 +121,7 @@ class Requests {
 		);
 
 		$this->memory = $this->registry->getOrRegisterHistogram(
-			$this->namespace,
+			$this->prefix,
 			'request_peak_memory',
 			'Returns how much memory the request used.',
 			[],
@@ -136,7 +178,7 @@ class Requests {
 		);
 
 		$this->memory->observe(
-			(\memory_get_peak_usage(false) / 1024 / 1024)
+			( \memory_get_peak_usage( false ) / 1024 / 1024 )
 		);
 	}
 }

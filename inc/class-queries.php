@@ -1,6 +1,8 @@
 <?php
 /**
  * Queries Class.
+ *
+ * @package PromPress
  */
 
 declare( strict_types = 1 );
@@ -10,17 +12,39 @@ namespace PromPress;
 use Prometheus\CollectorRegistry;
 use Prometheus\Histogram;
 
+/**
+ * Queries class.
+ *
+ * Handles the query metrics.
+ */
 class Queries {
+	/**
+	 * Registry.
+	 *
+	 * @var CollectorRegistry
+	 */
 	private CollectorRegistry $registry;
-	private string $namespace;
-	private Histogram $metric;
+
+	/**
+	 * Prefix.
+	 *
+	 * @var string
+	 */
+	private string $prefix;
+
+	/**
+	 * Duration.
+	 *
+	 * @var Histogram
+	 */
+	private Histogram $duration;
 
 	/**
 	 * Constructor.
 	 */
-	function __construct( CollectorRegistry $registry, string $namespace ) {
-		$this->registry  = $registry;
-		$this->namespace = $namespace;
+	public function __construct( CollectorRegistry $registry, string $prefix ) {
+		$this->registry = $registry;
+		$this->prefix   = $prefix;
 
 		$this->setup_metrics();
 
@@ -31,8 +55,8 @@ class Queries {
 	 * Setup the metrics.
 	 */
 	private function setup_metrics(): void {
-		$this->metric = $this->registry->getOrRegisterHistogram(
-			$this->namespace,
+		$this->duration = $this->registry->getOrRegisterHistogram(
+			$this->prefix,
 			'query_duration_seconds',
 			'Returns how long the query took to complete in seconds',
 			[],
@@ -65,10 +89,10 @@ class Queries {
 
 		foreach ( $wpdb->queries as $query ) {
 			if ( isset( $query[0], $query[1] ) ) {
-				$stmt = \str_replace( ["\r", "\n"], '', $query[0] );
+				$stmt = \str_replace( [ "\r", "\n" ], '', $query[0] );
 				$stmt = \preg_replace( '/\s+/', ' ', $stmt );
 
-				$this->metric->observe(
+				$this->duration->observe(
 					$query[1],
 					[]
 				);

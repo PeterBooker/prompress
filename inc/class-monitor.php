@@ -1,41 +1,62 @@
 <?php
 /**
  * Monitor Class.
+ *
+ * @package PromPress
  */
 
 declare( strict_types = 1 );
 
 namespace PromPress;
 
-use \Prometheus\CollectorRegistry;
-use \Prometheus\Storage\Redis;
+use Prometheus\CollectorRegistry;
+use Prometheus\Storage\Redis;
 
-use function \PromPress\get_settings;
+use function PromPress\get_settings;
 
+/**
+ * Monitor Class.
+ *
+ * Manages collecting metrics.
+ */
 class Monitor {
+	/**
+	 * Instance.
+	 *
+	 * @var self|null
+	 */
 	protected static self|null $instance = null;
 
+	/**
+	 * Registry.
+	 *
+	 * @var CollectorRegistry
+	 */
 	private CollectorRegistry $registry;
 
-	public static function getInstance(): static
-	{
-		if (static::$instance === null) {
-			static::$instance = new static;
+	/**
+	 * Get Instance.
+	 */
+	public static function get_instance(): static {
+		if ( null === static::$instance ) {
+			static::$instance = new static();
 		}
 
 		return static::$instance;
 	}
 
-	public static function setInstance($instance): void
-	{
+	/**
+	 * Set Instance.
+	 */
+	public static function set_instance( self $instance ): void {
 		static::$instance = $instance;
 	}
 
 	/**
 	 * Constructor.
 	 */
-	function __construct() {
-		$settings = get_settings();
+	public function __construct() {
+		$settings = get_settings(); // phpcs:ignore WordPress.WP.DeprecatedFunctions.get_settingsFound
 
 		// Return early if we should not be monitoring.
 		if ( ! $settings['active'] ) {
@@ -46,9 +67,9 @@ class Monitor {
 
 		try {
 			$this->registry = CollectorRegistry::getDefault();
-		} catch( \Exception $e ) {
+		} catch ( \Exception $e ) {
 			// TODO: Perhaps display this on the settings page?
-			\error_log( 'PromPress Error: ' . $e->getMessage() );
+			\error_log( 'PromPress Error: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			return;
 		}
 
@@ -64,7 +85,7 @@ class Monitor {
 			new Requests( $this->registry, $namespace );
 		}
 		if ( $settings['features']['remote_requests'] ) {
-			new RemoteRequests( $this->registry, $namespace );
+			new Remote_Requests( $this->registry, $namespace );
 		}
 		if ( $settings['features']['options'] ) {
 			new Options( $this->registry, $namespace );
@@ -75,6 +96,9 @@ class Monitor {
 		if ( $settings['features']['posts'] ) {
 			new Posts( $this->registry, $namespace );
 		}
+		if ( $settings['features']['users'] ) {
+			new Users( $this->registry, $namespace );
+		}
 
 		new Misc( $this->registry, $namespace );
 	}
@@ -83,34 +107,34 @@ class Monitor {
 	 * Setup Redis connection.
 	 */
 	private function setup_redis(): void {
-		if ( !\defined( 'WP_REDIS_HOST' ) ) {
+		if ( ! \defined( 'WP_REDIS_HOST' ) ) {
 			\define( 'WP_REDIS_HOST', '127.0.0.1' );
 		}
-		if ( !\defined( 'WP_REDIS_PORT' ) ) {
+		if ( ! \defined( 'WP_REDIS_PORT' ) ) {
 			\define( 'WP_REDIS_PORT', 6379 );
 		}
-		if ( !\defined( 'WP_REDIS_PASSWORD' ) ) {
+		if ( ! \defined( 'WP_REDIS_PASSWORD' ) ) {
 			\define( 'WP_REDIS_PASSWORD', null );
 		}
-		if ( !\defined( 'WP_REDIS_TIMEOUT' ) ) {
+		if ( ! \defined( 'WP_REDIS_TIMEOUT' ) ) {
 			\define( 'WP_REDIS_TIMEOUT', 0.1 );
 		}
-		if ( !\defined( 'WP_REDIS_READ_TIMEOUT' ) ) {
+		if ( ! \defined( 'WP_REDIS_READ_TIMEOUT' ) ) {
 			\define( 'WP_REDIS_READ_TIMEOUT', 5 );
 		}
-		if ( !\defined( 'WP_REDIS_PERSISTENT' ) ) {
+		if ( ! \defined( 'WP_REDIS_PERSISTENT' ) ) {
 			\define( 'WP_REDIS_PERSISTENT', false );
 		}
 
 		$options = \apply_filters(
 			'prompress_redis_options',
 			[
-				'host' => \WP_REDIS_HOST,
-				'port' => \WP_REDIS_PORT,
-				'password' => \WP_REDIS_PASSWORD,
-				'timeout' => \WP_REDIS_TIMEOUT,
-				'read_timeout' => \WP_REDIS_READ_TIMEOUT,
-				'persistent_connections' => \WP_REDIS_PERSISTENT
+				'host'                   => \WP_REDIS_HOST,
+				'port'                   => \WP_REDIS_PORT,
+				'password'               => \WP_REDIS_PASSWORD,
+				'timeout'                => \WP_REDIS_TIMEOUT,
+				'read_timeout'           => \WP_REDIS_READ_TIMEOUT,
+				'persistent_connections' => \WP_REDIS_PERSISTENT,
 			]
 		);
 

@@ -1,6 +1,8 @@
 <?php
 /**
  * Remote Requests Class.
+ *
+ * @package PromPress
  */
 
 declare( strict_types = 1 );
@@ -10,27 +12,55 @@ namespace PromPress;
 use Prometheus\CollectorRegistry;
 use Prometheus\Histogram;
 
-class RemoteRequests {
+/**
+ * Remote Requests Class.
+ *
+ * Handles all metrics relating to remote requests.
+ */
+class Remote_Requests {
+	/**
+	 * CollectorRegistry instance.
+	 *
+	 * @var CollectorRegistry
+	 */
 	private CollectorRegistry $registry;
-	private string $namespace;
+
+	/**
+	 * Prefix.
+	 *
+	 * @var string
+	 */
+	private string $prefix;
+
+	/**
+	 * Duation.
+	 *
+	 * @var Histogram
+	 */
 	private Histogram $duration;
+
+	/**
+	 * Start time.
+	 *
+	 * @var float
+	 */
 	private float $start;
 
 	/**
 	 * Constructor.
 	 */
-	function __construct( CollectorRegistry $registry, string $namespace ) {
-		$this->registry  = $registry;
-		$this->namespace = $namespace;
+	public function __construct( CollectorRegistry $registry, string $prefix ) {
+		$this->registry = $registry;
+		$this->prefix   = $prefix;
 
 		$this->setup_metrics();
 
-		\add_action( 'requests.before_request', [ $this, 'before_request' ], 9999 );
-		\add_action( 'requests.after_request', [ $this, 'after_request' ], 9999, 2 );
-		\add_action( 'requests-curl.before_request', [ $this, 'before_request' ], 9999 );
-		\add_action( 'requests-curl.after_request', [ $this, 'after_request' ], 9999, 2 );
-		\add_action( 'requests-fsockopen.before_request', [ $this, 'before_request' ], 9999 );
-		\add_action( 'requests-fsockopen.after_request', [ $this, 'after_request' ], 9999, 2 );
+		\add_action( 'requests.before_request', [ $this, 'before_request' ], \PHP_INT_MAX );
+		\add_action( 'requests.after_request', [ $this, 'after_request' ], \PHP_INT_MAX, 2 );
+		\add_action( 'requests-curl.before_request', [ $this, 'before_request' ], \PHP_INT_MAX );
+		\add_action( 'requests-curl.after_request', [ $this, 'after_request' ], \PHP_INT_MAX, 2 );
+		\add_action( 'requests-fsockopen.before_request', [ $this, 'before_request' ], \PHP_INT_MAX );
+		\add_action( 'requests-fsockopen.after_request', [ $this, 'after_request' ], \PHP_INT_MAX, 2 );
 	}
 
 	/**
@@ -38,7 +68,7 @@ class RemoteRequests {
 	 */
 	private function setup_metrics(): void {
 		$this->duration = $this->registry->getOrRegisterHistogram(
-			$this->namespace,
+			$this->prefix,
 			'remote_request_duration_seconds',
 			'Returns how long the request took to complete in seconds',
 			[
@@ -53,7 +83,7 @@ class RemoteRequests {
 	 * Stores the current time in milliseconds, converted from nanoseconds.
 	 */
 	public function before_request(): void {
-		$this->start = ( \hrtime(true) / 1e+6 );
+		$this->start = ( \hrtime( true ) / 1e+6 );
 	}
 
 	/**
@@ -67,9 +97,9 @@ class RemoteRequests {
 			return;
 		}
 
-		$elapsed_secs = ( ( \hrtime(true) / 1e+6 ) - $this->start ) / 1000;
+		$elapsed_secs = ( ( \hrtime( true ) / 1e+6 ) - $this->start ) / 1000;
 		$this->start  = 0.00;
-		$url          = \parse_url( $info['url'] );
+		$url          = \wp_parse_url( $info['url'] );
 
 		$this->duration->observe(
 			$elapsed_secs,

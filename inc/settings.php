@@ -1,6 +1,8 @@
 <?php
 /**
  * Settings.
+ *
+ * @package PromPress
  */
 
 declare( strict_types = 1 );
@@ -20,19 +22,19 @@ function register_settings() {
 		'prompress_settings_group',
 		'prompress_settings',
 		[ // phpcs:ignore Generic.Arrays.DisallowShortArraySyntax.Found
-			'type'              => 'object',
+			'type'         => 'object',
 			'show_in_rest' => [
 				'schema' => [
-					'type' => 'object',
+					'type'       => 'object',
 					'properties' => [
-						'active' => [
+						'active'   => [
 							'type' => 'boolean',
 						],
-						'storage' => [
+						'storage'  => [
 							'type' => 'string',
 						],
 						'features' => [
-							'type' => 'object',
+							'type'       => 'object',
 							'properties' => [
 								'emails'          => [ 'type' => 'boolean' ],
 								'errors'          => [ 'type' => 'boolean' ],
@@ -42,14 +44,15 @@ function register_settings() {
 								'requests'        => [ 'type' => 'boolean' ],
 								'remote_requests' => [ 'type' => 'boolean' ],
 								'updates'         => [ 'type' => 'boolean' ],
+								'users'           => [ 'type' => 'boolean' ],
 							],
 						],
 					],
 				],
 			],
 			// TODO: Enable santize_callback.
-			//'sanitize_callback' => 'sanitize_callback',
-			'default' => default_settings(),
+			// 'sanitize_callback' => 'sanitize_callback',.
+			'default'      => default_settings(),
 		]
 	);
 }
@@ -58,9 +61,9 @@ function register_settings() {
  * Get settings.
  */
 function get_settings(): array {
-	$defaults = default_settings();
-	$settings = \get_option( 'prompress_settings', $defaults );
-	$settings = \wp_parse_args( $settings, $defaults );
+	$defaults             = default_settings();
+	$settings             = \get_option( 'prompress_settings', $defaults );
+	$settings             = \wp_parse_args( $settings, $defaults );
 	$settings['features'] = \wp_parse_args( $settings['features'], $defaults['features'] );
 
 	return $settings;
@@ -79,7 +82,7 @@ function update_settings( string $settings ): bool {
 function update_setting( string $setting_key, mixed $setting_value ): bool {
 	$settings = \get_option( 'prompress_settings' );
 
-	$settings[$setting_key] = $setting_value;
+	$settings[ $setting_key ] = $setting_value;
 
 	return \update_option( 'prompress_settings', $settings );
 }
@@ -98,7 +101,7 @@ function update_setting_feature( string $feature_key, mixed $feature_value ): bo
 /**
  * Default Settings.
  */
-function default_settings() : array {
+function default_settings(): array {
 	return [
 		'active'   => true,
 		'storage'  => 'apc',
@@ -111,6 +114,7 @@ function default_settings() : array {
 			'requests'        => true,
 			'remote_requests' => true,
 			'updates'         => true,
+			'users'           => true,
 		],
 	];
 }
@@ -118,7 +122,7 @@ function default_settings() : array {
 /**
  * Settings sanitize callback.
  */
-function sanitize_callback( array $input ) : array {
+function sanitize_callback( array $input ): array {
 	$output = $input;
 
 	return $output;

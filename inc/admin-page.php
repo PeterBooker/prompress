@@ -1,6 +1,8 @@
 <?php
 /**
  * Admin Page.
+ *
+ * @package PromPress
  */
 
 declare( strict_types = 1 );
@@ -50,10 +52,8 @@ function render_page() {
 
 /**
  * Add Settings Link to Plugin Screen.
- *
- * @param
  */
-function settings_link( $links ) : array {
+function settings_link( array $links ): array {
 	$label = \esc_html__( 'Settings', 'prompress' );
 	$slug  = 'options_prompress';
 

@@ -1,6 +1,8 @@
 <?php
 /**
  * Emails Class.
+ *
+ * @package PromPress
  */
 
 declare( strict_types = 1 );
@@ -10,17 +12,39 @@ namespace PromPress;
 use Prometheus\CollectorRegistry;
 use Prometheus\Counter;
 
+/**
+ * Emails class.
+ *
+ * Handles the email metrics.
+ */
 class Emails {
+	/**
+	 * Registry.
+	 *
+	 * @var CollectorRegistry
+	 */
 	private CollectorRegistry $registry;
-	private string $namespace;
+
+	/**
+	 * Prefix.
+	 *
+	 * @var string
+	 */
+	private string $prefix;
+
+	/**
+	 * Count.
+	 *
+	 * @var Counter
+	 */
 	private Counter $count;
 
 	/**
 	 * Constructor.
 	 */
-	function __construct( CollectorRegistry $registry, string $namespace ) {
-		$this->registry  = $registry;
-		$this->namespace = $namespace;
+	public function __construct( CollectorRegistry $registry, string $prefix ) {
+		$this->registry = $registry;
+		$this->prefix   = $prefix;
 
 		// Check this feature is active.
 		if ( ! \apply_filters( 'prompress_feature_emails', true ) ) {
@@ -38,11 +62,11 @@ class Emails {
 	 */
 	private function setup_count_metric(): void {
 		$this->count = $this->registry->getOrRegisterCounter(
-			$this->namespace,
+			$this->prefix,
 			'email_count_total',
 			'Returns how many emails have been sent',
 			[
-				'status'
+				'status',
 			],
 		);
 	}

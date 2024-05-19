@@ -1,6 +1,6 @@
 <?php
 /**
- * Options Class.
+ * Users Class.
  *
  * @package PromPress
  */
@@ -13,13 +13,13 @@ use Prometheus\CollectorRegistry;
 use Prometheus\Gauge;
 
 /**
- * Options class.
+ * Users Class.
  *
- * Handles the options metrics.
+ * Handles all metrics relating to users.
  */
-class Options {
+class Users {
 	/**
-	 * Registry.
+	 * CollectorRegistry instance.
 	 *
 	 * @var CollectorRegistry
 	 */
@@ -30,10 +30,11 @@ class Options {
 	 *
 	 * @var string
 	 */
+
 	private string $prefix;
 
 	/**
-	 * Total.
+	 * Total users.
 	 *
 	 * @var Gauge
 	 */
@@ -46,25 +47,21 @@ class Options {
 		$this->registry = $registry;
 		$this->prefix   = $prefix;
 
-		// Check this feature is active.
-		if ( ! \apply_filters( 'prompress_feature_options', true ) ) {
-			return;
-		}
-
 		$this->setup_metrics();
 
-		\add_action( 'prompress_count_options', [ $this, 'count_options' ] );
+		\add_action( 'prompress_count_users', [ $this, 'count_users' ] );
 
-		if ( ! \wp_next_scheduled( 'prompress_count_options' ) ) {
+		// If no event is scheduled, schedule it for 4am.
+		if ( ! \wp_next_scheduled( 'prompress_count_users' ) ) {
 			$current_time = \current_datetime();
 
-			$schedule_time = $current_time->setTime( 2, 0, 0 );
+			$schedule_time = $current_time->setTime( 4, 0, 0 );
 
 			if ( $current_time > $schedule_time ) {
 				$schedule_time = $schedule_time->add( new \DateInterval( 'P1D' ) );
 			}
 
-			\wp_schedule_event( $schedule_time->getTimestamp(), 'daily', 'prompress_count_options' );
+			\wp_schedule_event( $schedule_time->getTimestamp(), 'daily', 'prompress_count_users' );
 		}
 	}
 
@@ -74,18 +71,31 @@ class Options {
 	private function setup_metrics(): void {
 		$this->total = $this->registry->getOrRegisterGauge(
 			$this->prefix,
-			'options_total',
-			'Returns how many options exist in the database',
-			[],
+			'users_total',
+			'Returns the total number of users',
+			[
+				'role',
+			],
 		);
 	}
 
 	/**
-	 * Handle counting options.
+	 * Handle counting users.
 	 */
-	public function count_options(): void {
-		global $wpdb;
-		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->options}" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$this->total->set( $count );
+	public function count_users(): void {
+		$result = \count_users();
+
+		if ( empty( $result['avail_roles'] ) ) {
+			return;
+		}
+
+		foreach ( $result['avail_roles'] as $role => $count ) {
+			$this->total->set(
+				(int) $count,
+				[
+					$role,
+				]
+			);
+		}
 	}
 }

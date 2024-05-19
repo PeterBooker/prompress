@@ -1,6 +1,8 @@
 <?php
 /**
  * Errors Class.
+ *
+ * @package PromPress
  */
 
 declare( strict_types = 1 );
@@ -10,19 +12,46 @@ namespace PromPress;
 use Prometheus\CollectorRegistry;
 use Prometheus\Counter;
 
+/**
+ * Errors Class.
+ *
+ * Handles all metrics relating to errors.
+ */
 class Errors {
+	/**
+	 * CollectorRegistry instance.
+	 *
+	 * @var CollectorRegistry
+	 */
 	private CollectorRegistry $registry;
-	private string $namespace;
+
+	/**
+	 * Prefix.
+	 *
+	 * @var string
+	 */
+	private string $prefix;
+
+	/**
+	 * Error metric.
+	 *
+	 * @var Counter
+	 */
 	private Counter $errors;
+
+	/**
+	 * Exception metric.
+	 *
+	 * @var Counter
+	 */
 	private Counter $exceptions;
 
 	/**
 	 * Constructor.
 	 */
-	function __construct( CollectorRegistry $registry, string $namespace ) {
-		$this->registry  = $registry;
-		$this->namespace = $namespace;
-
+	public function __construct( CollectorRegistry $registry, string $prefix ) {
+		$this->registry = $registry;
+		$this->prefix   = $prefix;
 
 		// Check this feature is active.
 		if ( ! \apply_filters( 'prompress_feature_errors', true ) ) {
@@ -31,7 +60,7 @@ class Errors {
 
 		$this->setup_metrics();
 
-		\set_error_handler( [ $this, 'custom_error_handler' ] );
+		\set_error_handler( [ $this, 'custom_error_handler' ] ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler
 		\set_exception_handler( [ $this, 'custom_exception_handler' ] );
 	}
 
@@ -40,16 +69,16 @@ class Errors {
 	 */
 	private function setup_metrics(): void {
 		$this->errors = $this->registry->getOrRegisterCounter(
-			$this->namespace,
+			$this->prefix,
 			'error_count_total',
 			'Returns how many errors have occurred',
 			[
-				'level'
+				'level',
 			],
 		);
 
 		$this->exceptions = $this->registry->getOrRegisterCounter(
-			$this->namespace,
+			$this->prefix,
 			'exception_count_total',
 			'Returns how many uncaught exceptions have occurred',
 			[],
@@ -62,7 +91,7 @@ class Errors {
 	public function custom_error_handler( mixed $errno ): bool {
 		$error_type = 'unknown';
 
-		switch ($errno) {
+		switch ( $errno ) {
 			case \E_DEPRECATED:
 			case \E_NOTICE:
 			case \E_USER_NOTICE:

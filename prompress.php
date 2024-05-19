@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Plugin Name:       PromPress
  * Plugin URI:        https://github.com/PeterBooker/prompress
@@ -13,6 +12,8 @@
  * Domain Path:       /languages
  * Requires at least: 6.4
  * Requires PHP:      8.1
+ *
+ * @package PromPress
  */
 
 declare(strict_types=1);
@@ -95,6 +96,7 @@ if ( ! php_version_check() || ! wp_version_check() ) {
 require_once PROMPRESS_DIR . 'vendor/autoload.php';
 require_once PROMPRESS_DIR . 'inc/assets.php';
 require_once PROMPRESS_DIR . 'inc/settings.php';
+require_once PROMPRESS_DIR . 'inc/class-cli.php';
 require_once PROMPRESS_DIR . 'inc/class-emails.php';
 require_once PROMPRESS_DIR . 'inc/class-errors.php';
 require_once PROMPRESS_DIR . 'inc/class-misc.php';
@@ -103,6 +105,7 @@ require_once PROMPRESS_DIR . 'inc/class-queries.php';
 require_once PROMPRESS_DIR . 'inc/class-options.php';
 require_once PROMPRESS_DIR . 'inc/class-posts.php';
 require_once PROMPRESS_DIR . 'inc/class-requests.php';
+require_once PROMPRESS_DIR . 'inc/class-users.php';
 require_once PROMPRESS_DIR . 'inc/class-monitor.php';
 require_once PROMPRESS_DIR . 'inc/rest.php';
 

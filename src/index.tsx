@@ -57,6 +57,7 @@ function Settings() {
 					requests: true,
 					remote_requests: true,
 					updates: true,
+					users: true,
 				},
 			},
 		}
@@ -321,6 +322,23 @@ function Settings() {
 										features: {
 											...features,
 											updates: ! features.updates
+										}
+									}
+								});
+							} }
+						/>
+
+						<ToggleControl
+							label={__('Users', 'prompress')}
+							help={__('Track the number of users (with role).', 'prompress')}
+							checked={ features.users }
+							onChange={ () => {
+								setState({
+									settings: {
+										...settings,
+										features: {
+											...features,
+											users: ! features.users
 										}
 									}
 								});

@@ -1,17 +1,18 @@
 <?php
 /**
  * Metrics Page.
+ *
+ * @package PromPress
  */
 
 declare( strict_types = 1 );
 
 namespace PromPress;
 
-use \Prometheus\CollectorRegistry;
-use \Prometheus\RenderTextFormat;
-use \Prometheus\Storage\Redis;
+use Prometheus\CollectorRegistry;
+use Prometheus\RenderTextFormat;
 
-if ( ! defined( 'ABSPATH' ) ) {
+if ( ! \defined( 'ABSPATH' ) ) {
 	die();
 }
 
@@ -23,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Register REST routes.
  */
-function register_rest_routes() : void {
+function register_rest_routes(): void {
 	\register_rest_route(
 		'prompress/v1',
 		'/metrics',
@@ -68,19 +69,20 @@ function metrics_permissions(): bool {
 function metrics_output(): \WP_REST_Response {
 	try {
 		$registry = CollectorRegistry::getDefault();
-	} catch( \Exception $e ) {
-		\error_log( 'PromPress Error: ' . $e->getMessage() );
+	} catch ( \Exception $e ) {
+		\error_log( 'PromPress Error: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 
-		$response = new \WP_REST_Response( \__( 'Error connecting to store, please see logs.', 'prompress' ), 400);
+		$response = new \WP_REST_Response( \__( 'Error connecting to store, please see logs.', 'prompress' ), 400 );
 		return $response;
 	}
 
 	$renderer = new RenderTextFormat();
-	$result = $renderer->render( $registry->getMetricFamilySamples() );
+	$result   = $renderer->render( $registry->getMetricFamilySamples() );
 
 	\header( 'Content-type: ' . RenderTextFormat::MIME_TYPE );
 
-	echo $result;
+	// No need to escape, this is pure text output to be consumed by Prometheus.
+	echo $result; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 	die();
 }
@@ -112,7 +114,7 @@ function storage_compatibility(): \WP_REST_Response {
  * Output storage compatibility.
  */
 function storage_wipe(): \WP_REST_Response {
-	$monitor = Monitor::getInstance();
+	$monitor = Monitor::get_instance();
 	$monitor->wipe_storage();
 
 	$response = new \WP_REST_Response( '', 200 );

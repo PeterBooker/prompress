@@ -1,6 +1,8 @@
 <?php
 /**
  * Assets.
+ *
+ * @package PromPress
  */
 
 declare( strict_types = 1 );
@@ -35,7 +37,7 @@ function register_assets(): void {
 	\wp_register_style(
 		'prompress-settings-style',
 		PROMPRESS_URL . 'build/index.css',
-		['wp-components'],
+		[ 'wp-components' ],
 		\filemtime( PROMPRESS_DIR . 'build/index.css' )
 	);
 	\wp_enqueue_style( 'prompress-settings-style' );

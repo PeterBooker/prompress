@@ -1,6 +1,8 @@
 <?php
 /**
- * Info Class.
+ * Misc Class.
+ *
+ * @package PromPress
  */
 
 declare( strict_types = 1 );
@@ -10,23 +12,57 @@ namespace PromPress;
 use Prometheus\CollectorRegistry;
 use Prometheus\Gauge;
 
+/**
+ * Misc class.
+ *
+ * Handles the miscellaneous metrics.
+ */
 class Misc {
+	/**
+	 * Registry.
+	 *
+	 * @var CollectorRegistry
+	 */
 	private CollectorRegistry $registry;
-	private string $namespace;
+
+	/**
+	 * Prefix.
+	 *
+	 * @var string
+	 */
+	private string $prefix;
+
+	/**
+	 * Info.
+	 *
+	 * @var Gauge
+	 */
 	private Gauge $info;
+
+	/**
+	 * Plugin Updates.
+	 *
+	 * @var Gauge
+	 */
 	private Gauge $plugin_updates;
+
+	/**
+	 * Theme Updates.
+	 *
+	 * @var Gauge
+	 */
 	private Gauge $theme_updates;
 
 	/**
 	 * Constructor.
 	 */
-	function __construct( CollectorRegistry $registry, string $namespace ) {
-		$this->registry  = $registry;
-		$this->namespace = $namespace;
+	public function __construct( CollectorRegistry $registry, string $prefix ) {
+		$this->registry = $registry;
+		$this->prefix   = $prefix;
 
 		$this->setup_metrics();
 
-		\add_action( 'init', [ $this, 'collect_misc' ], 9999 );
+		\add_action( 'init', [ $this, 'collect_misc' ], \PHP_INT_MAX );
 	}
 
 	/**
@@ -34,7 +70,7 @@ class Misc {
 	 */
 	private function setup_metrics(): void {
 		$this->info = $this->registry->getOrRegisterGauge(
-			$this->namespace,
+			$this->prefix,
 			'info',
 			'Information about the WordPress environment.',
 			[
@@ -47,14 +83,14 @@ class Misc {
 		);
 
 		$this->plugin_updates = $this->registry->getOrRegisterGauge(
-			$this->namespace,
+			$this->prefix,
 			'plugin_updates',
 			'The number of plugin updates available.',
 			[],
 		);
 
 		$this->theme_updates = $this->registry->getOrRegisterGauge(
-			$this->namespace,
+			$this->prefix,
 			'theme_updates',
 			'The number of theme updates available.',
 			[],
