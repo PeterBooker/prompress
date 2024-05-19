@@ -37,7 +37,7 @@ services:
       NEW_GID: 1000
     volumes:
       - "./.docker/config/php/php.ini:/usr/local/etc/php/conf.d/zzz-php.ini"
-      - "wpdata:/var/www/html"
+      - "./.docker/wordpress:/var/www/html"
       - "./:/var/www/html/wp-content/plugins/prompress"
     extra_hosts:
       - "${SITE_URL:-localhost}:host-gateway"
@@ -49,8 +49,8 @@ services:
       - php
     volumes:
       - "./.docker/config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
-      - "wpdata:/var/www/html"
-      - "./:/var/www/html/wp-content/plugins/prompress"
+      - "./.docker/wordpress:/var/www/html"
+      - "./:/var/www/html/wp-content/plugins/prompress:ro"
     ports:
       - "80:80"
       - "443:443"

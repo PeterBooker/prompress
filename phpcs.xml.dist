@@ -2,7 +2,7 @@
 <ruleset name="WordPress Coding Standards">
 	<description>Apply WordPress Coding Standards to all PromPress plugin files.</description>
 
-	<config name="installed_paths" value="vendor/wp-coding-standards/wpcs" />
+	<config name="installed_paths" value="./../../wp-coding-standards/wpcs,./../../phpcsstandards/phpcsutils,./../../phpcsstandards/phpcsextra" />
 
 	<rule ref="WordPress-Core"/>
 
@@ -13,9 +13,41 @@
 
 	<file>.</file>
 
-	<rule ref="Internal.NoCodeFound">
-		<severity>0</severity>
+	<!-- Rules -->
+	<rule ref="WordPress">
+		<exclude name="PEAR.Functions.FunctionCallSignature.CloseBracketLine" />
+		<exclude name="PEAR.Functions.FunctionCallSignature.ContentAfterOpenBracket" />
+		<exclude name="PEAR.Functions.FunctionCallSignature.MultipleArguments" />
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax.Found" />
+		<exclude name="Universal.Operators.DisallowShortTernary.Found" />
+		<exclude name="Squiz.Commenting.FunctionComment.MissingParamTag" />
 	</rule>
+
+	<rule ref="WordPress.NamingConventions.ValidHookName">
+		<properties>
+			<property name="additionalWordDelimiters" value="/" />
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.WP.AlternativeFunctions">
+		<properties>
+			<property name="exclude" value="file_get_contents" />
+		</properties>
+	</rule>
+
+	<rule ref="Generic.Arrays.DisallowLongArraySyntax.Found" />
+
+	<rule ref="Squiz.Commenting.FunctionComment">
+		<exclude name="Squiz.Commenting.FunctionComment.MissingParamTag" />
+	</rule>
+
+	<!-- <rule ref="Internal.NoCodeFound">
+		<severity>0</severity>
+	</rule> -->
+
+	<exclude-pattern>.docker/</exclude-pattern>
+	<exclude-pattern>.github/</exclude-pattern>
+	<exclude-pattern>local/</exclude-pattern>
 
 	<!-- Do not perform checks inside external package directories. -->
 	<exclude-pattern>vendor/</exclude-pattern>
@@ -23,5 +55,4 @@
 
 	<!-- Do not perform checks on the `build` directory. -->
 	<exclude-pattern>build/</exclude-pattern>
-
 </ruleset>
