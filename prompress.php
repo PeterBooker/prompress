@@ -3,7 +3,7 @@
  * Plugin Name:       PromPress
  * Plugin URI:        https://github.com/PeterBooker/prompress
  * Description:       Monitor your WordPress website with Prometheus.
- * Version:           0.3.0
+ * Version:           0.4.0
  * Author:            Peter Booker
  * Author URI:        https://peterbooker.com
  * Text Domain:       prompress
@@ -26,11 +26,11 @@ if ( ! \function_exists( 'add_filter' ) ) {
 	exit();
 }
 
-\define( 'PROMPRESS_VERSION', '0.3.0' );
+\define( 'PROMPRESS_VERSION', '0.4.0' );
 \define( 'PROMPRESS_DIR', \plugin_dir_path( __FILE__ ) );
 \define( 'PROMPRESS_URL', \plugin_dir_url( __FILE__ ) );
 \define( 'PROMPRESS_MIN_PHP_VERSION', '8.1' );
-\define( 'PROMPRESS_MIN_WP_VERSION', '6.1' );
+\define( 'PROMPRESS_MIN_WP_VERSION', '6.4' );
 
 /**
  * Check for required PHP version.
@@ -51,6 +51,18 @@ function php_version_check() {
  */
 function wp_version_check() {
 	if ( \version_compare( $GLOBALS['wp_version'], PROMPRESS_MIN_WP_VERSION, '<' ) ) {
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Check for Redis extension.
+ *
+ * @return bool
+ */
+function redis_extension_check() {
+	if ( ! \extension_loaded( 'redis' ) ) {
 		return false;
 	}
 	return true;
@@ -80,6 +92,10 @@ function requirements_error_notice() {
 		);
 	}
 
+	if ( ! redis_extension_check() ) {
+		$notices[] = \esc_html__( 'PromPress plugin requires the Redis (PECL) PHP extension.', 'prompress' );
+	}
+
 	foreach ( $notices as $notice ) {
 		echo '<div class="notice notice-error"><p>' . \esc_html( $notice ) . '</p></div>';
 	}
@@ -88,7 +104,7 @@ function requirements_error_notice() {
 /**
  * If either check fails, display notice and bail.
  */
-if ( ! php_version_check() || ! wp_version_check() ) {
+if ( ! php_version_check() || ! wp_version_check() || ! redis_extension_check() ) {
 	\add_action( 'admin_notices', __NAMESPACE__ . '\\requirements_error_notice' );
 	return;
 }

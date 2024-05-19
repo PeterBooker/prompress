@@ -9,7 +9,7 @@ declare( strict_types = 1 );
 
 namespace PromPress;
 
-if ( ! defined( 'ABSPATH' ) ) {
+if ( ! \defined( 'ABSPATH' ) ) {
 	die();
 }
 
