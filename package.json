@@ -32,6 +32,7 @@
 		"vendor",
 		"prompress.php",
 		"uninstall.php",
+		"composer.json",
 		"LICENSE",
 		"README.txt"
 	]
