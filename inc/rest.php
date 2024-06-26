@@ -81,8 +81,7 @@ function metrics_output(): \WP_REST_Response {
 
 	\header( 'Content-type: ' . RenderTextFormat::MIME_TYPE );
 
-	// No need to escape, this is pure text output to be consumed by Prometheus.
-	echo $result; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo esc_html( $result );
 
 	die();
 }
