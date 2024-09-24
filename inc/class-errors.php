@@ -121,8 +121,10 @@ class Errors {
 
 	/**
 	 * Handle uncaught exceptions.
+	 *
+	 * @throws \Throwable Throws the exception again.
 	 */
-	public function custom_exception_handler(\Throwable $exception): void {
+	public function custom_exception_handler( \Throwable $exception ): void {
 		$this->exceptions->inc();
 
 		throw $exception;
