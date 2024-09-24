@@ -122,9 +122,9 @@ class Errors {
 	/**
 	 * Handle uncaught exceptions.
 	 */
-	public function custom_exception_handler(): bool {
+	public function custom_exception_handler(\Throwable $exception): void {
 		$this->exceptions->inc();
 
-		return false;
+		throw $exception;
 	}
 }
