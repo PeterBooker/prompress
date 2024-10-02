@@ -16,3 +16,6 @@ scrape_configs:
     static_configs:
       - targets:
         - 'web:80'
+    authorization:
+      type: Bearer
+      credentials: 'abcdef'
