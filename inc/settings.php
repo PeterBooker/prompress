@@ -33,6 +33,12 @@ function register_settings() {
 						'storage'  => [
 							'type' => 'string',
 						],
+						'authentication'   => [
+							'type' => 'boolean',
+						],
+						'token'  => [
+							'type' => 'string',
+						],
 						'features' => [
 							'type'       => 'object',
 							'properties' => [
@@ -103,8 +109,10 @@ function update_setting_feature( string $feature_key, mixed $feature_value ): bo
  */
 function default_settings(): array {
 	return [
-		'active'   => true,
-		'storage'  => 'apc',
+		'active'         => true,
+		'storage'        => 'apc',
+		'authentication' => false,
+		'token'          => '',
 		'features' => [
 			'emails'          => true,
 			'errors'          => true,

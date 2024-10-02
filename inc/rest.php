@@ -12,6 +12,8 @@ namespace PromPress;
 use Prometheus\CollectorRegistry;
 use Prometheus\RenderTextFormat;
 
+use function PromPress\get_settings;
+
 if ( ! \defined( 'ABSPATH' ) ) {
 	die();
 }
@@ -58,9 +60,30 @@ function register_rest_routes(): void {
  * Metrics permissions callback.
  */
 function metrics_permissions(): bool {
-	// TODO: Maybe add support for permissions/auth check?
+	$settings = get_settings(); // phpcs:ignore WordPress.WP.DeprecatedFunctions.get_settingsFound
 
-	return true;
+	// Allow admin users.
+	if (\current_user_can('manage_options')) {
+		return true;
+	}
+
+	// Allow if authentication is disabled.
+	if (true !== $settings['authentication']) {
+		return true;
+	}
+
+	$auth_header = wp_get_auth_headers();
+	if (!empty($auth_header['Authorization'])) {
+		if (\preg_match('/Bearer\s(\S+)/', $auth_header['Authorization'], $matches)) {
+			$token = $matches[1];
+
+			if (\hash_equals($token, $settings['token'])) {
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 /**
@@ -81,7 +104,7 @@ function metrics_output(): \WP_REST_Response {
 
 	\header( 'Content-type: ' . RenderTextFormat::MIME_TYPE );
 
-	echo esc_html( $result );
+	echo $result; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 	die();
 }
@@ -119,4 +142,22 @@ function storage_wipe(): \WP_REST_Response {
 	$response = new \WP_REST_Response( '', 200 );
 
 	return $response;
+}
+
+/**
+ * Get authorization header.
+ */
+function wp_get_auth_headers() {
+	$headers = [];
+	if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+		$headers['Authorization'] = $_SERVER['HTTP_AUTHORIZATION'];
+	} elseif (\function_exists('getallheaders')) {
+		foreach (\getallheaders() as $name => $value) {
+			if (\strcasecmp($name, 'Authorization') === 0) {
+				$headers['Authorization'] = $value;
+			}
+		}
+	}
+
+	return $headers;
 }

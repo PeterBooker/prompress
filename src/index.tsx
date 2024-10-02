@@ -47,6 +47,8 @@ function Settings() {
 			isLoaded: false,
 			settings: {
 				active: true,
+				authentication: false,
+				token: '',
 				storage: 'apc',
 				features: {
 					emails: true,
@@ -65,13 +67,13 @@ function Settings() {
 
 	const {
 		isLoaded,
-		isActive,
 		settings,
 	} = state;
 
 	const {
 		active,
-		storage,
+		authentication,
+		token,
 		features,
 	} = settings;
 
@@ -82,12 +84,13 @@ function Settings() {
 			if ( false === isLoaded ) {
 				settings.fetch()
 					.then( ( response ) => {
-						console.log(response);
 						if ( null !== response['prompress_settings'] ) {
 							setState( {
 								isLoaded: true,
 								settings: {
 									active: response['prompress_settings']['active'],
+									authentication: response['prompress_settings']['authentication'],
+									token: response['prompress_settings']['token'],
 									features: response['prompress_settings']['features'],
 								},
 							} );
@@ -183,6 +186,47 @@ function Settings() {
 								} );
 							} }
 						>{ __( 'Wipe Storage', 'prompress' ) }</Button>
+					</div>
+				</div>
+
+				<div className="components-panel">
+					<div className="components-panel__body is-opened">
+						<h2 className="components-panel__body-title">{ __( 'REST API', 'prompress' ) }</h2>
+						<p>Enable authentication for the metrics endpoint.</p>
+						<ToggleControl
+							label={__('Require Authentication', 'prompress')}
+							help={
+								authentication
+									? 'Authentication is required.'
+									: 'Authentication is not required.'
+							}
+							checked={authentication}
+							onChange={ () => {
+								setState({
+									settings: {
+										...settings,
+										authentication: ! authentication,
+									}
+								});
+							} }
+						/>
+						{ authentication && (
+							<>
+								<TextControl
+									label={__('Bearer Token', 'prompress')}
+									value={token}
+									onChange={ (value) => {
+										setState({
+											settings: {
+												...settings,
+												token: value,
+											}
+										});
+									}}
+									help={__('Set a bearer token which must be sent by Prometheus to access the metrics endpoint.', 'prompress')}
+								/>
+							</>
+						)}
 					</div>
 				</div>
 
