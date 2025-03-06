@@ -126,6 +126,8 @@ class Monitor {
 			\define( 'WP_REDIS_PERSISTENT', false );
 		}
 
+		$sitePrefix = \sanitize_key( \parse_url( \get_site_url() ), \PHP_URL_HOST ) . '_' . \get_current_blog_id();
+
 		$options = \apply_filters(
 			'prompress_redis_options',
 			[
@@ -135,6 +137,7 @@ class Monitor {
 				'timeout'                => \WP_REDIS_TIMEOUT,
 				'read_timeout'           => \WP_REDIS_READ_TIMEOUT,
 				'persistent_connections' => \WP_REDIS_PERSISTENT,
+				'prefix'                 => 'wp_site_' . $sitePrefix . ':',
 			]
 		);
 
