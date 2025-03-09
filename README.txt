@@ -56,6 +56,10 @@ You can use this snippet in your Prometheus config (just update the domain under
 
 == Changelog ==
 
+= 1.2.0 =
+
+* Bugfix- Multisite support. Uses a unique Redis key per site, allowing multiple sites in a network and/or on the same server to share a Redis server.
+
 = 1.0.0 =
 
 * Initial release.
