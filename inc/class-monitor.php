@@ -126,7 +126,9 @@ class Monitor {
 			\define( 'WP_REDIS_PERSISTENT', false );
 		}
 
-		$sitePrefix = \sanitize_key( \parse_url( \get_site_url() ), \PHP_URL_HOST ) . '_' . \get_current_blog_id();
+		$site_url = \parse_url(\get_site_url());
+		$path = !empty($site_url['path']) ? \sanitize_key(trim($site_url['path'], '/')) : '';
+		$sitePrefix = \sanitize_key($site_url['host']) . ($path ? "_{$path}" : '') . '_' . \get_current_blog_id();
 
 		$options = \apply_filters(
 			'prompress_redis_options',
