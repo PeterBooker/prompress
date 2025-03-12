@@ -139,11 +139,11 @@ class Monitor {
 				'timeout'                => \WP_REDIS_TIMEOUT,
 				'read_timeout'           => \WP_REDIS_READ_TIMEOUT,
 				'persistent_connections' => \WP_REDIS_PERSISTENT,
-				'prefix'                 => 'wp_site_' . $sitePrefix . ':',
 			]
 		);
 
 		Redis::setDefaultOptions( $options );
+		Redis::setPrefix( 'wp_site_' . $sitePrefix . ':' );
 	}
 
 	/**
