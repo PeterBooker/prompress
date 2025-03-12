@@ -126,9 +126,9 @@ class Monitor {
 			\define( 'WP_REDIS_PERSISTENT', false );
 		}
 
-		$site_url = \parse_url(\get_site_url());
-		$path = !empty($site_url['path']) ? \sanitize_key(trim($site_url['path'], '/')) : '';
-		$sitePrefix = \sanitize_key($site_url['host']) . ($path ? "_{$path}" : '') . '_' . \get_current_blog_id();
+		$site_url   = \parse_url(\get_site_url());
+		$path       = !empty($site_url['path']) ? \sanitize_key(\trim($site_url['path'], '/')) : '';
+		$sitePrefix = \apply_filters('prompress_redis_prefix', 'wp_site_' . \sanitize_key($site_url['host']) . ($path ? "_{$path}" : '') . '_' . \get_current_blog_id() . ':' );
 
 		$options = \apply_filters(
 			'prompress_redis_options',
@@ -143,7 +143,7 @@ class Monitor {
 		);
 
 		Redis::setDefaultOptions( $options );
-		Redis::setPrefix( 'wp_site_' . $sitePrefix . ':' );
+		Redis::setPrefix( $sitePrefix );
 	}
 
 	/**
