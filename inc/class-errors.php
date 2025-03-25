@@ -93,6 +93,9 @@ class Errors {
 
 		switch ( $errno ) {
 			case \E_DEPRECATED:
+			case \E_USER_DEPRECATED:
+				$error_type = 'deprecation';
+				break;
 			case \E_NOTICE:
 			case \E_USER_NOTICE:
 				$error_type = 'notice';
