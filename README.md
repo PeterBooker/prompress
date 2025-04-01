@@ -2,7 +2,7 @@
 
 PromPress is a WordPress plugin which allows you to monitor your install with Prometheus.
 
-*Note: This is early development so the metrics and what they track may change significantly.*
+Please create an issue with ideas for new metrics or problems with existing metrics.
 
 ## Dependencies
 
