@@ -91,6 +91,7 @@ class Requests {
 			'Returns how total number of requests',
 			[
 				'status',
+				'home_url',
 			],
 		);
 
@@ -100,6 +101,7 @@ class Requests {
 			'Returns how long the request took to complete in seconds',
 			[
 				'status_code',
+				'home_url',
 			],
 			\apply_filters( 'prompress_metric_request_duration_buckets', [
 				0.1,
@@ -124,7 +126,9 @@ class Requests {
 			$this->prefix,
 			'request_peak_memory',
 			'Returns how much memory the request used.',
-			[],
+			[
+				'home_url',
+			],
 			\apply_filters( 'prompress_metric_request_peak_memory_buckets', [
 				2.0,
 				2.5,
@@ -167,6 +171,7 @@ class Requests {
 		$this->total->inc(
 			[
 				$this->status_code,
+				get_home_url(),
 			]
 		);
 
@@ -174,11 +179,15 @@ class Requests {
 			$elapsed_secs,
 			[
 				$this->status_code,
+				get_home_url(),
 			]
 		);
 
 		$this->memory->observe(
-			( \memory_get_peak_usage( false ) / 1024 / 1024 )
+			( \memory_get_peak_usage( false ) / 1024 / 1024 ),
+			[
+				get_home_url(),
+			]
 		);
 	}
 }
