@@ -101,6 +101,7 @@ class Monitor {
 		}
 
 		new Misc( $this->registry, $namespace );
+		new CLI( $this->registry );
 	}
 
 	/**
