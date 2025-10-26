@@ -75,6 +75,7 @@ class Users {
 			'Returns the total number of users',
 			[
 				'role',
+				'home_url',
 			],
 		);
 	}
@@ -94,6 +95,7 @@ class Users {
 				(int) $count,
 				[
 					$role,
+					get_home_url(),
 				]
 			);
 		}

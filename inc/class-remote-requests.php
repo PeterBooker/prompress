@@ -74,6 +74,7 @@ class Remote_Requests {
 			[
 				'domain',
 				'status_code',
+				'home_url',
 			],
 		);
 	}
@@ -106,6 +107,7 @@ class Remote_Requests {
 			[
 				$url['host'],
 				$info['http_code'],
+				get_home_url(),
 			]
 		);
 	}

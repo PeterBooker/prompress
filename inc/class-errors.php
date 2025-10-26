@@ -74,6 +74,7 @@ class Errors {
 			'Returns how many errors have occurred',
 			[
 				'level',
+				'home_url',
 			],
 		);
 
@@ -81,7 +82,9 @@ class Errors {
 			$this->prefix,
 			'exception_count_total',
 			'Returns how many uncaught exceptions have occurred',
-			[],
+			[
+				'home_url',
+			],
 		);
 	}
 
@@ -117,7 +120,7 @@ class Errors {
 				break;
 		}
 
-		$this->errors->inc( [ 'level' => $error_type ] );
+		$this->errors->inc( [ 'level' => $error_type, 'home_url' => get_home_url() ] );
 
 		return false;
 	}
@@ -128,7 +131,7 @@ class Errors {
 	 * @throws \Throwable Throws the exception again.
 	 */
 	public function custom_exception_handler( \Throwable $exception ): void {
-		$this->exceptions->inc();
+		$this->exceptions->inc( [ 'home_url' => get_home_url() ] );
 
 		throw $exception;
 	}

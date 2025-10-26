@@ -59,7 +59,9 @@ class Queries {
 			$this->prefix,
 			'query_duration_seconds',
 			'Returns how long the query took to complete in seconds',
-			[],
+			[
+				'home_url',
+			],
 			\apply_filters( 'prompress_metric_query_duration_buckets', [
 				0.001,
 				0.002,
@@ -94,7 +96,7 @@ class Queries {
 
 				$this->duration->observe(
 					$query[1],
-					[]
+					[ 'home_url' => get_home_url() ]
 				);
 			}
 		}

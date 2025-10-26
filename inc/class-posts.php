@@ -74,6 +74,7 @@ class Posts {
 			[
 				'post_type',
 				'post_status',
+				'home_url',
 			],
 		);
 	}
@@ -93,6 +94,7 @@ class Posts {
 					[
 						'post_type'   => $post_type,
 						'post_status' => $status,
+						'home_url' => get_home_url()
 					]
 				);
 			}

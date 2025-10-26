@@ -76,7 +76,9 @@ class Options {
 			$this->prefix,
 			'options_total',
 			'Returns how many options exist in the database',
-			[],
+			[
+				'home_url',
+			],
 		);
 	}
 
@@ -86,6 +88,6 @@ class Options {
 	public function count_options(): void {
 		global $wpdb;
 		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->options}" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$this->total->set( $count );
+		$this->total->set( $count, [ 'home_url' => get_home_url() ] );
 	}
 }
