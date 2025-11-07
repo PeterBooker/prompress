@@ -1,12 +1,12 @@
 /**
  * External Imports.
  */
-import React from 'react';
-import * as ReactDOMClient from 'react-dom/client';
+import { createRoot } from "react-dom/client";
 
 import {
 	useEffect,
 	useReducer,
+	useState,
 } from 'react';
 
 /**
@@ -16,6 +16,7 @@ import { __ } from '@wordpress/i18n';
 
 import {
 	Button,
+	ClipboardButton,
 	Icon,
 	Placeholder,
 	Spinner,
@@ -40,15 +41,19 @@ import Notices from './components/Notices';
 
 import './index.scss';
 
-function Settings() {
+function Settings( props ) {
 	const [ state, setState ] = useReducer(
 		( s, a ) => ({ ...s, ...a }),
 		{
 			isLoaded: false,
+			configTemplate: '',
 			settings: {
 				active: true,
 				authentication: false,
+				authType: '',
 				token: '',
+				headerKey: '',
+				headerValue: '',
 				storage: 'apc',
 				features: {
 					emails: true,
@@ -68,20 +73,44 @@ function Settings() {
 	const {
 		isLoaded,
 		settings,
+		configTemplate,
 	} = state;
 
 	const {
 		active,
 		authentication,
+		authType,
 		token,
+		headerKey,
+		headerValue,
 		features,
 	} = settings;
 
 	useEffect( () => {
 		api.loadPromise.then( () => {
-			const settings = new api.models.Settings();
 
 			if ( false === isLoaded ) {
+				const initialSettings = props.settings;
+
+				if (initialSettings) {
+					setState( {
+						isLoaded: true,
+						settings: {
+							active: initialSettings['active'],
+							authentication: initialSettings['authentication'],
+							authType: initialSettings['authType'],
+							token: initialSettings['token'],
+							headerKey: initialSettings['headerKey'],
+							headerValue: initialSettings['headerValue'],
+							features: initialSettings['features'],
+						},
+						configTemplate: props.configTemplate
+					} );
+
+					return;
+				}
+
+				const settings = new api.models.Settings();
 				settings.fetch()
 					.then( ( response ) => {
 						if ( null !== response['prompress_settings'] ) {
@@ -90,7 +119,10 @@ function Settings() {
 								settings: {
 									active: response['prompress_settings']['active'],
 									authentication: response['prompress_settings']['authentication'],
+									authType: response['prompress_settings']['authType'],
 									token: response['prompress_settings']['token'],
+									headerKey: response['prompress_settings']['headerKey'],
+									headerValue: response['prompress_settings']['headerValue'],
 									features: response['prompress_settings']['features'],
 								},
 							} );
@@ -105,6 +137,27 @@ function Settings() {
 			}
 		} );
 	}, [] );
+
+	const [
+		configHasCopied, setConfigHasCopied
+	] = useState( false );
+
+	function buildConfig( template, settings ) {
+		var authReplacement = '';
+		if (settings.authentication) {
+			if (settings.authType === 'bearer') {
+				authReplacement = "    authorization:\n"
+					+ "      type: Bearer\n"
+					+ "      credentials: '" + settings.token.replace("'", "''") + "'\n";
+			} else if (settings.authType === 'api-key') {
+				authReplacement = "    http_headers:\n      "
+					+ settings.headerKey
+					+ ":\n        values: ['" + settings.headerValue.replace("'", "''") + "']\n";
+			}
+		}
+
+		return template.replace("%auth%\n", authReplacement);
+	}
 
 	useEffect( () => {
 		apiFetch( {
@@ -127,6 +180,8 @@ function Settings() {
 			</Placeholder>
 		);
 	}
+
+	const configText = buildConfig( configTemplate, settings );
 
 	return (
 		<Fragment>
@@ -212,19 +267,92 @@ function Settings() {
 						/>
 						{ authentication && (
 							<>
-								<TextControl
-									label={__('Bearer Token', 'prompress')}
-									value={token}
-									onChange={ (value) => {
-										setState({
-											settings: {
-												...settings,
-												token: value,
-											}
-										});
-									}}
-									help={__('Set a bearer token which must be sent by Prometheus to access the metrics endpoint.', 'prompress')}
-								/>
+								<div style={{display: 'flex', flex: '150px auto', gap: '16px'}}>
+									<div style={{display: 'flex', gap: '16px', width: '150px'}}>
+										<RadioControl
+											label={__('Authentication Type', 'prompress')}
+											selected={authType}
+											options={[
+												{label: 'Bearer', value: 'bearer'},
+											]}
+											onChange={(value) => {
+												setState({
+													settings: {
+														...settings,
+														authType: value,
+													}
+												});
+											}}
+										/>
+									</div>
+									<div style={{flexGrow: 1, gap: '16px'}}>
+										<TextControl
+											label={__('Bearer Token', 'prompress')}
+											value={token}
+											disabled={authType !== 'bearer'}
+											onChange={(value) => {
+												setState({
+													settings: {
+														...settings,
+														token: value,
+													}
+												});
+											}}
+											help={__('Set a bearer token which must be sent by Prometheus to access the metrics endpoint.', 'prompress')}
+										/>
+									</div>
+								</div>
+
+								<div style={{display: 'flex', gap: '16px'}}>
+									<div style={{display: 'flex', width: '150px'}}>
+										<RadioControl
+											selected={authType}
+											options={[
+												{label: 'Api-Key', value: 'api-key'},
+											]}
+											onChange={(value) => {
+												setState({
+													settings: {
+														...settings,
+														authType: value,
+													}
+												});
+											}}
+										/>
+									</div>
+									<div style={{flex: 1}}>
+										<TextControl
+											label={__('Header Key', 'prompress')}
+											value={headerKey}
+											disabled={authType !== 'api-key'}
+											onChange={(value) => {
+												setState({
+													settings: {
+														...settings,
+														headerKey: value,
+													}
+												});
+											}}
+											help={__('Set a header name.', 'prompress')}
+										/>
+									</div>
+									<div style={{flex: 1, gap: '16px'}}>
+										<TextControl
+											label={__('Header Value', 'prompress')}
+											value={headerValue}
+											disabled={authType !== 'api-key'}
+											onChange={(value) => {
+												setState({
+													settings: {
+														...settings,
+														headerValue: value,
+													}
+												});
+											}}
+											help={__('And a secret value.', 'prompress')}
+										/>
+									</div>
+								</div>
 							</>
 						)}
 					</div>
@@ -391,6 +519,36 @@ function Settings() {
 
 					</div>
 				</div>
+
+				{ configTemplate && (
+					<div className="components-panel">
+						<div className="components-panel__body is-opened">
+							<h2 className="components-panel__body-title">
+								{__( 'Prometheus Config', 'prompress' )}
+							</h2>
+							<p>
+								<div>
+									<ClipboardButton
+										className={ 'components-button is-secondary' }
+										style={{ float: 'right' }}
+										text={ configText }
+										onCopy={ () => setConfigHasCopied(true) }
+										onFinishCopy={ () => setConfigHasCopied( false ) }
+									>
+										{ configHasCopied
+											? __( 'Copied!', 'prompress' )
+											: __( 'Copy Config', 'prompress' )
+										}
+									</ClipboardButton>
+								</div>
+                                {__( 'This is what your config could look like.', 'prompress' )}
+							</p>
+
+							<pre># prometheus.yaml</pre>
+							<pre>{ configText }</pre>
+						</div>
+					</div>
+				)}
 			</div>
 			<div className="prompress__save">
 				<Button
@@ -424,9 +582,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 	const elem = document.getElementById( 'prompress-plugin-settings' );
 
 	if ( elem ) {
-		render(
-			<Settings />,
-			elem
+        const root = createRoot( elem );
+        const prompressData = window['prompress'] || {};
+		root.render(
+			<Settings
+                settings={ prompressData['settings'] }
+                configTemplate={ prompressData['configTemplate'] }
+            />,
 		);
 	}
 } );

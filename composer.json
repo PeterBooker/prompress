@@ -33,7 +33,7 @@
 	},
 	"scripts": {
 		"lint": "php ./vendor/bin/phpcs -ps .",
-		"make-pot": "./vendor/bin/wp make-pot ./ languages/prompress.pot --domain=prompress"
+		"make-pot": "./vendor/bin/wp i18n make-pot ./ languages/prompress.pot --domain=prompress"
 	},
 	"config": {
 		"sort-packages": true,

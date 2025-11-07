@@ -36,7 +36,16 @@ function register_settings() {
 						'authentication'   => [
 							'type' => 'boolean',
 						],
+						'authType' => [
+							'type' => 'string',
+						],
 						'token'  => [
+							'type' => 'string',
+						],
+						'headerKey' => [
+							'type' => 'string',
+						],
+						'headerValue' => [
 							'type' => 'string',
 						],
 						'features' => [
@@ -76,6 +85,31 @@ function get_settings(): array {
 }
 
 /**
+ * Returns prometheus config template.
+ */
+function get_prometheus_config_template(): string {
+	$url   = rtrim( get_home_url(), '/' ) . '/wp-json/prompress/v1/metrics';
+	$parts = wp_parse_url( $url );
+
+	$template = <<< EOC
+scrape_configs:
+  - job_name: 'live-your-site'
+    scheme: %scheme%
+%auth%
+    metric_path: '%uri%'  
+    static_configs:
+      - targets: ['%domain%']
+    
+EOC;
+
+	return str_replace(
+		[ '%scheme%', '%uri%', '%domain%' ],
+		[ $parts['scheme'], $parts['path'], $parts['host'] ],
+		$template
+	);
+}
+
+/**
  * Update settings.
  */
 function update_settings( string $settings ): bool {
@@ -112,7 +146,10 @@ function default_settings(): array {
 		'active'         => true,
 		'storage'        => 'apc',
 		'authentication' => false,
+		'authType'       => 'bearer',
 		'token'          => '',
+		'headerKey'      => 'x-prompress-auth',
+		'headerValue'    => '',
 		'features' => [
 			'emails'          => true,
 			'errors'          => true,

@@ -43,6 +43,9 @@ function register_rest_routes(): void {
 		[
 			'methods'  => \WP_REST_Server::READABLE,
 			'callback' => __NAMESPACE__ . '\\storage_compatibility',
+			'permission_callback' => function () {
+				return \current_user_can( 'manage_options' );
+			},
 		]
 	);
 
@@ -52,6 +55,9 @@ function register_rest_routes(): void {
 		[
 			'methods'  => \WP_REST_Server::READABLE,
 			'callback' => __NAMESPACE__ . '\\storage_wipe',
+			'permission_callback' => function () {
+				return \current_user_can( 'manage_options' );
+			},
 		]
 	);
 }
@@ -70,6 +76,27 @@ function metrics_permissions(): bool {
 	// Allow if authentication is disabled.
 	if (true !== $settings['authentication']) {
 		return true;
+	}
+
+	if ( 'api-key' === $settings['authType'] ) {
+		$expected_header = strtolower( $settings['headerKey'] ?? '' );
+		if ( $expected_header ) {
+			$headers = \getallheaders();
+
+			$secret = null;
+			foreach ( $headers as $key => $value ) {
+				if ( strtolower( $key ) === $expected_header ) {
+					$secret = $value;
+					break;
+				}
+			}
+
+			if ( $secret ) {
+				return ( $settings['headerValue'] ?? null ) === $secret;
+			}
+		}
+
+		return false;
 	}
 
 	$auth_header = wp_get_auth_headers();
