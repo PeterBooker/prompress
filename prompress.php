@@ -33,6 +33,15 @@ if ( ! \function_exists( 'add_filter' ) ) {
 \define( 'PROMPRESS_MIN_WP_VERSION', '6.4' );
 
 /**
+ * returns plugin base name
+ */
+function prompress_plugin_basename(): string {
+	static $basename;
+
+	return $basename ??= \plugin_basename( __FILE__ );
+}
+
+/**
  * Check for required PHP version.
  *
  * @return bool
