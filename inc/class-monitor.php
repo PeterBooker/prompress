@@ -108,23 +108,23 @@ class Monitor {
 	 * Setup Redis connection.
 	 */
 	private function setup_redis(): void {
-		if ( ! \defined( 'WP_REDIS_HOST' ) ) {
-			\define( 'WP_REDIS_HOST', '127.0.0.1' );
+		if ( ! \defined( 'PROMPRESS_REDIS_HOST' ) ) {
+			\define( 'PROMPRESS_REDIS_HOST', \defined( 'WP_REDIS_HOST' ) ? \WP_REDIS_HOST : '127.0.0.1' );
 		}
-		if ( ! \defined( 'WP_REDIS_PORT' ) ) {
-			\define( 'WP_REDIS_PORT', 6379 );
+		if ( ! \defined( 'PROMPRESS_REDIS_PORT' ) ) {
+			\define( 'PROMPRESS_REDIS_PORT', \defined( 'WP_REDIS_PORT' ) ? \WP_REDIS_PORT : 6379 );
 		}
-		if ( ! \defined( 'WP_REDIS_PASSWORD' ) ) {
-			\define( 'WP_REDIS_PASSWORD', null );
+		if ( ! \defined( 'PROMPRESS_REDIS_PASSWORD' ) ) {
+			\define( 'PROMPRESS_REDIS_PASSWORD', \defined( 'WP_REDIS_PASSWORD' ) ? \WP_REDIS_PASSWORD : null );
 		}
-		if ( ! \defined( 'WP_REDIS_TIMEOUT' ) ) {
-			\define( 'WP_REDIS_TIMEOUT', 0.1 );
+		if ( ! \defined( 'PROMPRESS_REDIS_TIMEOUT' ) ) {
+			\define( 'PROMPRESS_REDIS_TIMEOUT', \defined( 'WP_REDIS_TIMEOUT' ) ? \WP_REDIS_TIMEOUT : 0.1 );
 		}
-		if ( ! \defined( 'WP_REDIS_READ_TIMEOUT' ) ) {
-			\define( 'WP_REDIS_READ_TIMEOUT', 5 );
+		if ( ! \defined( 'PROMPRESS_REDIS_READ_TIMEOUT' ) ) {
+			\define( 'PROMPRESS_REDIS_READ_TIMEOUT', \defined( 'WP_REDIS_READ_TIMEOUT' ) ? \WP_REDIS_READ_TIMEOUT : 5 );
 		}
-		if ( ! \defined( 'WP_REDIS_PERSISTENT' ) ) {
-			\define( 'WP_REDIS_PERSISTENT', false );
+		if ( ! \defined( 'PROMPRESS_REDIS_PERSISTENT' ) ) {
+			\define( 'PROMPRESS_REDIS_PERSISTENT', \defined( 'WP_REDIS_PERSISTENT' ) ? \WP_REDIS_PERSISTENT : false );
 		}
 
 		$site_url   = \parse_url(\get_site_url());
@@ -134,12 +134,12 @@ class Monitor {
 		$options = \apply_filters(
 			'prompress_redis_options',
 			[
-				'host'                   => \WP_REDIS_HOST,
-				'port'                   => \WP_REDIS_PORT,
-				'password'               => \WP_REDIS_PASSWORD,
-				'timeout'                => \WP_REDIS_TIMEOUT,
-				'read_timeout'           => \WP_REDIS_READ_TIMEOUT,
-				'persistent_connections' => \WP_REDIS_PERSISTENT,
+				'host'                   => \PROMPRESS_REDIS_HOST,
+				'port'                   => \PROMPRESS_REDIS_PORT,
+				'password'               => \PROMPRESS_REDIS_PASSWORD,
+				'timeout'                => \PROMPRESS_REDIS_TIMEOUT,
+				'read_timeout'           => \PROMPRESS_REDIS_READ_TIMEOUT,
+				'persistent_connections' => \PROMPRESS_REDIS_PERSISTENT,
 			]
 		);
 
