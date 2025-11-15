@@ -33,7 +33,7 @@ if ( ! \function_exists( 'add_filter' ) ) {
 \define( 'PROMPRESS_MIN_WP_VERSION', '6.4' );
 
 /**
- * returns plugin base name
+ * Get plugin base name.
  */
 function prompress_plugin_basename(): string {
 	static $basename;
@@ -50,6 +50,7 @@ function php_version_check() {
 	if ( \version_compare( \PHP_VERSION, PROMPRESS_MIN_PHP_VERSION, '<' ) ) {
 		return false;
 	}
+
 	return true;
 }
 
@@ -62,6 +63,7 @@ function wp_version_check() {
 	if ( \version_compare( $GLOBALS['wp_version'], PROMPRESS_MIN_WP_VERSION, '<' ) ) {
 		return false;
 	}
+
 	return true;
 }
 
@@ -74,6 +76,7 @@ function redis_extension_check() {
 	if ( ! \extension_loaded( 'redis' ) ) {
 		return false;
 	}
+
 	return true;
 }
 
