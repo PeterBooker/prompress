@@ -18,11 +18,13 @@ if ( ! \is_blog_admin() ) {
 	return;
 }
 
+$plugin_basename = prompress_plugin_basename();;
+
 /**
  * Actions
  */
 \add_action( 'admin_menu', __NAMESPACE__ . '\\register_page' );
-\add_action( 'plugin_action_links_' . \plugin_basename( __FILE__ ), __NAMESPACE__ . '\\settings_link' );
+\add_action( "plugin_action_links_$plugin_basename", __NAMESPACE__ . '\\settings_link' );
 
 /**
  * Filters
