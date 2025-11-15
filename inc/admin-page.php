@@ -48,6 +48,12 @@ function register_page() {
  */
 function render_page() {
 	?>
+	<script>
+		var prompress = {
+			settings: <?php echo wp_json_encode( get_settings() ); ?>,
+			configTemplate: <?php echo wp_json_encode( get_prometheus_config_template() ) . "\n"; ?>
+		};
+	</script>
 	<div id="prompress-plugin-settings"></div>
 	<?php
 }
