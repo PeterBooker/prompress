@@ -79,6 +79,7 @@ class Misc {
 				'db_version',
 				'machine',
 				'os',
+				'home_url',
 			],
 		);
 
@@ -86,14 +87,18 @@ class Misc {
 			$this->prefix,
 			'plugin_updates',
 			'The number of plugin updates available.',
-			[],
+			[
+				'home_url',
+			],
 		);
 
 		$this->theme_updates = $this->registry->getOrRegisterGauge(
 			$this->prefix,
 			'theme_updates',
 			'The number of theme updates available.',
-			[],
+			[
+				'home_url',
+			],
 		);
 	}
 
@@ -109,6 +114,7 @@ class Misc {
 			$wp_db_version,
 			\php_uname( 'm' ),
 			\php_uname( 's' ),
+			get_home_url()
 		] );
 
 		require_once ABSPATH . 'wp-admin/includes/update.php';
@@ -117,8 +123,8 @@ class Misc {
 		$plugins = \get_plugin_updates();
 		$themes  = \get_theme_updates();
 
-		$this->plugin_updates->set( \count( $plugins ), [] );
+		$this->plugin_updates->set( \count( $plugins ), [ 'home_url' => get_home_url() ] );
 
-		$this->theme_updates->set( \count( $themes ), [] );
+		$this->theme_updates->set( \count( $themes ), [ 'home_url' => get_home_url() ] );
 	}
 }

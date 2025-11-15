@@ -67,6 +67,7 @@ class Emails {
 			'Returns how many emails have been sent',
 			[
 				'status',
+				'home_url',
 			],
 		);
 	}
@@ -75,13 +76,13 @@ class Emails {
 	 * Handle successful emails.
 	 */
 	public function handle_successful(): void {
-		$this->count->inc( [ 'status' => 'success' ] );
+		$this->count->inc( [ 'status' => 'success', 'home_url' => get_home_url() ] );
 	}
 
 	/**
 	 * Handle failed emails.
 	 */
 	public function handle_failed(): void {
-		$this->count->inc( [ 'status' => 'fail' ] );
+		$this->count->inc( [ 'status' => 'fail', 'home_url' => get_home_url() ] );
 	}
 }
