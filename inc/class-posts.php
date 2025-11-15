@@ -88,6 +88,9 @@ class Posts {
 			$counts = \wp_count_posts( $post_type );
 
 			foreach ( $counts as $status => $count ) {
+                if ( ! $count ) {
+                    continue;
+                }
 				$this->posts->set(
 					(int) $count,
 					[
